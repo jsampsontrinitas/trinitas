@@ -1,1 +1,1 @@
-# trinitas
+# trinitas project
