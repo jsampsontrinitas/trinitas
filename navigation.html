@@ -5,16 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        body.in-tcc-page {
+            font-weight: bold;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-transform: uppercase;
+        }
+
+        body.in-tcc-page a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            display: inline-block;
+            transform: translateY(0px);
+            text-shadow: 0 1px #000;
+            filter: blur(0.5px);
+            transition: all 0.5s ease-out;
+        }
+
+        body.in-tcc-page a:hover {
+            transform: translateY(-3px);
+            filter: blur(0px);
+            text-shadow: 0 6px #000;
+            opacity: 1;
+        }
+    </style>
 </head>
 
 <body align="center">
+    <script>
+        if ( window.parent.location.pathname.endsWith("tcc.html") ) {
+            document.body.classList.add("in-tcc-page");
+        }
+    </script>
     <nav>
         <a href="index.html" target="_parent">Homepage</a> |
         <a href="about.html" target="_parent">About Me</a> |
         <a href="sports.html" target="_parent">Sports</a> | 
-        <a href="index.html" target="_parent">
-            <img title="Trintas" src="images/Crest.png" height="20px" />
-        </a> |
+        <a href="tcc.html" target="_parent">
+            <img style="border-radius: 10px;" title="Trintas" src="images/characters/trinitas-code-club-1-transparent.png" height="20px" valign="middle" />
+        </a> | 
+        <a href="pictures.html" target="_parent">Pics</a>
     </nav>
 </body>
 

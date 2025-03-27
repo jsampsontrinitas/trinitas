@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trinitas Code Club</title>
+    <style>
+        /* These lines target the ::before and ::after 
+         * pseudo-elements of the <body>. These are invisible elements
+         * by default, but we modify them by giving them `content`,
+         * then changing their `display` and `position` to freeze/glue
+         * the dimensions to the edges of the browser window. When we
+         * say "top: 0", that means there should be 0 pixels between
+         * the pseudo-element and the top of the window (i.e., the
+         * two are basically touching). The same goes for the other
+         * properties. By setting all to 0, we essentially glue our
+         * element to the edges of the window. And `position: fixed`
+         * means our element stays in place, even if we scroll.
+         */
+        body::before,
+        body::after {
+            content: "";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        /* Now we add additonal styles to our body::before pseudo-
+         * element. We blur it by 1px, then set the desired background
+         * image, position, and size. By using `background-size: cover`,
+         * the image will always be stretched to fill the screen.
+         */
+        body::before {
+            filter: blur(1px);
+            background-image: url("images/scenes/trinitas-code-club-classroom.png");
+            background-position: center;
+            background-size: cover;
+        }
+
+        /* Now we add some additional styles for our ::after pseudo-element.
+         * Similar to the ::before styles above, we set our background-image
+         * details. Here, we use `background-size: contain`, which means the
+         * image should always be fully contained within the window. We use
+         * `filter` to add a drop-shadow for the students. The shadow is built
+         * with four values: x-offset, y-offset, blur-amount, and color. Our
+         * color is defined with the rgba function, which defines the amount
+         * of RED, GREEN, and BLUE in our shadow, followed by the ALPHA, which
+         * is the transparency (0.5 is 50% transparent).
+         */
+        body::after {
+            background-image: url("images/characters/trinitas-code-club-1-transparent.png");
+            background-size: contain;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Our iframe gets `position: fixed`, which means it will also
+         * snap to an edge of the window. We set the `bottom: 10px` so
+         * our iframe is always 10 pixels from the bottom of the window.
+         * Likewise, `left: 10px` means we'll always have a gap of 10px
+         * between the window border and the left-side of our iframe. We
+         * use the calc() function to determine how much gap should be
+         * on the right-side of our iframe, subtracting 20 pixels from
+         * whatever 100% of the width of the page happens to be.
+         */
+        iframe {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            height: 40px;
+            width: calc(100% - 20px);
+            /* When we have multiple elements on the page that have a
+             * "fixed" position like we do, we need to specify the order
+             * of these elements relative to the camera. By setting the
+             * `z-index` of the iframe to `1`, and not setting a `z-index`
+             * at all for the ::before and ::after pseudo-elements, we
+             * tell the browser that the iframe should be stacked higher,
+             * or presented on top of the other "fixed" elements.
+             */
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border-width: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <iframe src="navigation.html"></iframe>
+</body>
+
+</html>
