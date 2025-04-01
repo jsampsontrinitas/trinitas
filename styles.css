@@ -5,3 +5,15 @@ body {
 p {
     color: red;
 }
+
+        /* h1 is my selector.
+           color: green is my delcaration.
+           color is my property.
+           green is my value */
+           h1 {
+            color:green;
+        }
+
+        h1:hover {
+            color: orange;
+        }

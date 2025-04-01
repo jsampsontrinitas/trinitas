@@ -5,31 +5,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scratchpad: Ideas and Concepts</title>
+    <!-- This is an HTML comment -->
     <style>
-        h1 {
-            color: transparent;
-            transition: all 1s;
-            background: linear-gradient(to right, red, green, rgb(160, 29, 149), orange);
-            background-size: 300%;
-            background-clip: text;
-            animation: magic 3s linear infinite;
+        /* 'h1' is my selector.
+           'color: green' is my declaration.
+           'color' is my property.
+           'green' is my value.
+           ';' terminates a rule/statement. */
+        h1:first-child {
+            text-align: center;
+            color: green;
         }
 
+        div:has(a) {
+            background: black;
+        }
+
+        /*
+            h1:first-child is a tagname plus a pseudo class. This matches all h1 elements that also happen to be the first element in any other element.
+        */
+
+        /* my selector is h1:hover */
         h1:hover {
-            opacity: 0.25;
-            transform: scale(1.5);
+            color: lightblue;
         }
 
-        @keyframes magic {
-            0% { background-position: 0% }
-            100% { background-position: 100% }
-        }
+        h1 { text-align: center; }
     </style>
 </head>
 
-<body>
-    <h1>Hello, World!</h1>
-    <h1>This is my EPIC PAGE!</h1>
+<body foo="bar" jansky="epic">
+    <div>
+        <h1>This is my EPIC PAGE!</h1>
+        <a href=""></a>
+    </div>
+    <h1 id="pagetitle">Hello, World!</h1>
 </body>
 
 </html>
