@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trinitas Code Club</title>
+  <meta name="description" content="Freshmen learning web development at Trinitas Christian School">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Add your CSS styling here */
+    /* We have a tag name, and an attribute */
+    img[alt='School Photo'] {
+        border-left-width: 10px;
+        border-left-color: green;
+        border-left-style: ridge;
+        border-right: 10px dotted red;
+    }
+
+    /* This is a basic tagname selector */
+    img#crest {
+        border-top: 20px double orange;
+        border-left: none;
+    }
+
+    /* selects all uls with a [class] of 'topics-list' */
+    ul.topics-list {
+        list-style: circle;
+    }
+
+    /* multi-element selector; many selectors in one */
+    h1, h2, h3, h4, h5, h6, p {
+        color: red;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Trinitas Code Club</h1>
+    <nav>
+      <ul>
+        <li><a href="#about" class="nav-link">About the Club</a></li>
+        <li><a href="#topics" class="nav-link">Topics Covered</a></li>
+        <li><a href="#logic" class="nav-link">Logic & Programming</a></li>
+        <li><a href="#projects" class="nav-link">Student Projects</a></li>
+        <li><a href="#contact" class="nav-link">Get Involved</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <img id="crest" src="images/Crest.png" alt="School Photo" />
+
+  <main>
+    <section id="about">
+      <h2>About the Club</h2>
+      <p>The Trinitas Code Club is a group of Freshmen students learning to build websites and programs from scratch. Using HTML, CSS, and JavaScript, these students explore how the web works—and how to create their own part of it.</p>
+    </section>
+
+    <section id="topics">
+      <h2>Topics Covered</h2>
+      <ol>
+        <li>Hello</li>
+        <li>World</li>
+      </ol>
+      <ul class="topics-list">
+        <li><strong>HTML</strong> – Structure your content semantically</li>
+        <li><strong>CSS</strong> – Design with style and layout precision</li>
+        <li><strong>JavaScript</strong> – Make your pages interactive and dynamic</li>
+        <li><strong>Version Control</strong> – Learn how to use GitHub like real developers</li>
+        <li><strong>Browser Extensions</strong> – Build custom tools for the web</li>
+      </ul>
+    </section>
+
+    <section id="logic">
+      <h2>Logic & Programming</h2>
+      <p>Programming is built on the foundation of logic. Just as formal Logic teaches students how to reason with clarity and structure, programming trains the mind to solve problems methodically. Writing code is like creating a set of instructions that must be perfectly logical—computers don’t guess, they do exactly what you tell them.</p>
+      <p>This class connects classical education with modern skills, allowing students to apply what they know about logical inference, patterns, and structure to build real-world tech.</p>
+    </section>
+
+    <section id="projects">
+      <h2>Student Projects</h2>
+      <article class="project-card" data-category="web">
+        <h3>“Gods of Code” Character Arena</h3>
+        <p>A text-based battle game where each student creates a JavaScript-powered profile inspired by a figure from Greek mythology. The characters face off in a logic-driven tournament.</p>
+      </article>
+      <article class="project-card" data-category="design">
+        <h3>Responsive Portfolio Pages</h3>
+        <p>Students designed their own web portfolios using Flexbox and Grid, showcasing what they've learned in both structure and design principles.</p>
+      </article>
+      <article class="project-card" data-category="tooling">
+        <h3>Browser Extension: Trinitas Tracker</h3>
+        <p>A simple browser extension that gives students reminders, tips, and inspiration as they browse the web.</p>
+      </article>
+    </section>
+  </main>
+
+  <aside>
+    <h2>Developer Highlights</h2>
+    <article>
+      <h3>Why Learn to Code?</h3>
+      <p>Code powers everything from video games and mobile apps to scientific research and financial systems. Learning to code gives students the ability to create, not just consume, the digital world.</p>
+    </article>
+    <article>
+      <h3>Design Matters</h3>
+      <p>CSS isn’t just about color and fonts—it’s about clarity, accessibility, and experience. Students learn how thoughtful design enhances usability and communicates purpose.</p>
+    </article>
+  </aside>
+
+  <footer>
+    <p>Questions? Want to get involved? Contact the instructor at <a href="mailto:codeclub@trinitaschristian.org">codeclub@trinitaschristian.org</a></p>
+    <p>&copy; 2025 Trinitas Code Club. Built with logic and style.</p>
+  </footer>
+</body>
+</html>
