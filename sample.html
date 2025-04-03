@@ -5,10 +5,19 @@
   <title>Trinitas Code Club</title>
   <meta name="description" content="Freshmen learning web development at Trinitas Christian School">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
+  <style type="barf">
+    img {
+      max-width: 35%;
+    }
+    /*
+      = - this matches the whole value
+      ^= - this matches the start of the value
+      $= - this matches the end of the value
+      */
+
     /* Add your CSS styling here */
     /* We have a tag name, and an attribute */
-    img[alt='School Photo'] {
+    img[src^='ImAgEs/' i] + main section:nth-of-type(2n) {
         border-left-width: 10px;
         border-left-color: green;
         border-left-style: ridge;
@@ -31,6 +40,38 @@
         color: red;
     }
   </style>
+  <style>
+    #crest {
+      max-width: 100px;
+      position: sticky;
+      top: 10px;
+      z-index: 1;
+    }
+
+    main {
+      opacity: 0.85;
+      transition: all 1s;
+      transform: scale(0.85) rotate(0);
+      padding: 1em 2em;
+      margin-left: 1em;
+      margin-right: 1em;
+      border: 1px solid black;
+      border-radius: 2em;
+      /* overflow: hidden; */
+      background-color: gray;
+      box-shadow:
+        5px 5px red,
+        10px 10px green,
+        15px 15px blue;
+      filter: grayscale(1);
+    }
+
+    main:hover {
+      opacity: 1;
+      transform: scale(1) rotate(-5deg);
+      filter: grayscale(0);
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -47,6 +88,7 @@
   </header>
 
   <img id="crest" src="images/Crest.png" alt="School Photo" />
+  <!-- <img id="sampson" src="images/characters/trinitas-code-club-sampson.png" alt="Sampson" /> -->
 
   <main>
     <section id="about">
