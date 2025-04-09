@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scratchpad: Ideas and Concepts</title>
     <!-- This is an HTML comment -->
-    <style>
+    <style type="barf">
         /* 'h1' is my selector.
            'color: green' is my declaration.
            'color' is my property.
@@ -32,14 +32,92 @@
 
         h1 { text-align: center; }
     </style>
+    <style type="barf2">
+        body {
+            margin: 0;
+            perspective: 200px;
+        }
+
+        #road {
+            background-color: gray;
+            background-image: linear-gradient(
+                to right,
+                transparent 48%, black 48%,
+                black 52%, transparent 52%
+            );
+            background-size: 100% 75%;
+            background-repeat: no-repeat;
+            min-height: 50vh;
+            width: 100vw;
+            transform-origin: bottom center;
+            transform: rotateX(45deg);
+            animation: rolling 2s linear infinite;
+        }
+
+        @keyframes rolling {
+            0% { background-position-y: -100vh; }
+            100% { background-position-y: 100vh; }
+        }
+
+        main {
+            background: red;
+            font-size: 1px;
+        }
+    </style>
+    <style>
+        #car {
+            width: 300px;
+            height: 100px;
+            background: black;
+            position: relative;
+        }
+
+        .wheel::before {
+            content: ":)";
+            display: block;
+            color: white;
+        }
+
+        .wheel {
+            width: 75px;
+            height: 75px;
+            background: red;
+            color: white;
+            border-radius: 50%;
+        }
+        .wheel:first-child {
+            position: absolute;
+            bottom: -50%; left: 10%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .wheel:last-child {
+            position: absolute;
+            bottom: -50%; right: 10%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg) }
+            100% { transform: rotate(360deg) }
+        }
+    </style>
 </head>
 
 <body foo="bar" jansky="epic">
-    <div>
+
+        <div id="car">
+            <div class="wheel"></div>
+            <div class="wheel"></div>
+        </div>
+
+
+    <div id="road"></div>
+    <!-- <div>
         <h1>This is my EPIC PAGE!</h1>
         <a href=""></a>
     </div>
-    <h1 id="pagetitle">Hello, World!</h1>
+    <h1 id="pagetitle">Hello, World!</h1> -->
 </body>
 
 </html>

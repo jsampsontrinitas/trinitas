@@ -41,6 +41,27 @@
     }
   </style>
   <style>
+
+    :root {
+      /* Our brand colors */
+      --primary-color: black;
+      --accent-color: white;
+    }
+
+    /* Default styles here */
+    body {
+      background-color: var(--primary-color);
+      color: var(--accent-color);
+    }
+
+    /* Two different conditions for overriding the styles */
+    @media (prefers-color-scheme: dark) and (min-width: 800px) {
+      body {
+        color: var(--primary-color);
+        background-color: var(--accent-color);
+      }
+    }
+
     #crest {
       max-width: 100px;
       position: sticky;
