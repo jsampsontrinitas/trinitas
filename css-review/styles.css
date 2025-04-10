@@ -1,0 +1,28 @@
+/* Defining vars in the scope of #funnybox */
+#funnybox {
+    --on-size: 2em;
+    --off-size: 1em;
+}
+
+/* Is only impacted if it is moved into the #funnybox element */
+#notfunbox {
+    width: var(--on-size);
+    height: var(--on-size);
+    background: teal;
+}
+
+/* [id='zoom'] is the same as writing #zoom */
+#box {
+    width: var(--off-size);
+    height: var(--off-size);
+    border: 2px solid green;
+    background: rebeccapurple;
+    transition: all 2s;
+}
+
+#zoom:checked ~ #box {
+    width: var(--on-size);
+    height: var(--on-size);
+    border: 1px solid black;
+    background: pink;
+}
