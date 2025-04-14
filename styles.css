@@ -1,19 +1,25 @@
 body {
-    color:blueviolet;
+    color: blueviolet;
 }
 
 p {
     color: red;
 }
 
-        /* h1 is my selector.
-           color: green is my delcaration.
-           color is my property.
-           green is my value */
-           h1 {
-            color:green;
-        }
+/* CSS rules start with a selector (e.g., `h1`), are
+then followed by a block (signified by curly braces at
+the start and end), and the block contains one or more
+declarations. A declaration is a property, followed by
+a colon, followed by a value, and lastly followed by a
+semicolon. Below, `h1` is our selector, `color` is our
+declaration property, and `green` is our declaration
+value. We could have more declarations if we like, but
+this example contains only one. When we have only one
+declaration, the `;` at the end is optional. */
+h1 {
+    color: green;
+}
 
-        h1:hover {
-            color: orange;
-        }
+h1:hover {
+    color: orange;
+}
