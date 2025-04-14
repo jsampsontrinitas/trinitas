@@ -1,15 +1,47 @@
 <!DOCTYPE html>
+
+<!-- By setting the [lang] attribute to "en", we inform any application or
+ process that may access this content that our page is in English. This is a
+ good practice to have, and is useful in many scarios. For example, this is
+ how a user from another country might be informed by their browser that the
+ content can be translated into their language. -->
 <html lang="en">
 
 <head>
+    <!-- By declaring `UTF-8`, we ensure that our webpage can handle special
+     characters, such as accented letters (e.g., é, ñ) or symbols (e.g., €,
+     ©), without rendering issues. -->
     <meta charset="UTF-8">
+
+    <!-- This line ensures the page adapts to the display of whatever device
+     it is being viewed on (e.g., a laptop, a tablet, a phone, etc.). Phones
+     often have 2x more pixels, so they can show sharper images in smaller
+     spaces. Without this line, our page content may appear very tiny on 
+     phones and other "high pixel density" displays. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- You are very familiar with the <link> element by now. This "links"
+     an external CSS file to our HTML document, enabling that file to select
+     elements on this page, and apply various styles. -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- We use the [defer] attribute to tell the browser to finish building
+     the page before it executes any of our JavaScript. If our code is ran before
+     the rest of the page has been constructed, many of the elements we expect to
+     exist will not yet have been built. -->
     <script defer src="game.js"></script>
+
+    <!-- The <title> element sets the title of the page. This title is what
+     appears in the tab of your browser, and is also used by search engines
+     to identify the content of your page. -->
     <title>Click Hero</title>
 </head>
 
 <body>
+    <!-- Anything with an [id] attribute will likely be referenced from our
+     JavaScript code for one purpose or another. For example, [id='gameLength']
+     helps us find the element wherein we'd like to display the number of
+     seconds remaining in the current game. -->
     <h1>Click Game!</h1>
     <p>Click anywhere on the screen as fast as you can for <span id="gameLength">10</span> seconds!</p>
 
@@ -21,6 +53,9 @@
         <progress id="progressBar" value="10" max="10"></progress>
     </div>
 
+    <!-- This list starts out empty, with no <li> elements within. We will
+    add <li> elements with our JavaScript code later on. We make sure this is
+    given an [id] of "scoreList" so that we can look it up within our code. -->
     <ul id="scoreList"></ul>
 </body>
 
