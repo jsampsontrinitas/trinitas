@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script defer src="game.js"></script>
+    <title>Click Hero</title>
+</head>
+
+<body>
+    <h1>Click Game!</h1>
+    <p>Click anywhere on the screen as fast as you can for <span id="gameLength">10</span> seconds!</p>
+
+    <button id="startButton">Start</button>
+
+    <div id="gameInfo">
+        <p>Score: <span id="scoreDisplay">0</span></p>
+        <p>Time Remaining: <span id="timeDisplay">10s</span></p>
+        <progress id="progressBar" value="10" max="10"></progress>
+    </div>
+
+    <ul id="scoreList"></ul>
+</body>
+
+</html>

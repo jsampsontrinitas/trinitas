@@ -1,0 +1,44 @@
+/*
+    We set the font family to something a bit more pleasing
+    to the eye. We center everything within the <body>. We
+    disable user-select, so rapid clicking doesn't cause us
+    to select portions of text on the page. Lastly, we add
+    a small amount of padding to the <body> to create a bit
+    of breathing room for our UI.
+*/
+body {
+    font-family: sans-serif;
+    text-align: center;
+    user-select: none;
+    padding: 20px;
+}
+
+/*
+    We have some minimal "responsive design" showcased here.
+    By "responsive design", I mean the UI adapts to the space
+    made available by the browser dimensions. The <progress>
+    element is instructed to be 100% wide, if possible.
+    
+    The `max-width` property adds a limit to the maximum
+    width. The element will therefore be  100% or 400px wide,
+    whichever is smaller. When the page is viewed in a narrow
+    browser window, it may be less than 400px wide. In that
+    case, the <progress> element will stretch to be 100% as
+    wide as the page.
+*/
+progress {
+    width: 100%;
+    max-width: 400px;
+    height: 20px;
+    margin-top: 10px;
+}
+
+/*
+    For any <button> that is <button disabled>, we set its
+    opacity to 50%. Disabled buttons are already rendered a
+    bit differently, but this further emphasizes when the
+    element is not active or usable.
+*/
+button:disabled {
+    opacity: 0.5;
+}
