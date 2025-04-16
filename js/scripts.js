@@ -20,13 +20,20 @@ let timevalue;
 let tries = 10;
 let userAnswer = prompt("What is the secret message?");
 
-while (userAnswer != "please" && tries > 0) {
+// This while loop runs as long a two conditions are true:
+// 1. The userAnswer variable DOES NOT equal "please", and
+// 2. The value of tries is greater than 0
+// When one or both of these are false, the while loop will be exit
+while ((userAnswer != "please") && (tries > 0)) {
     alert("Wrong. Try again. You have " + tries + " attempts remaining.");
     userAnswer = prompt("What is the secret message?");
     tries = tries - 1;
 }
 
 if (userAnswer == "please") {
+    h2.hidden = false;
+} else {
+    h2.textContent = "This is fake, replacement content.";
     h2.hidden = false;
 }
 
@@ -51,4 +58,30 @@ function setTime() {
 
 function renderTime() {
     el.textContent = timevalue;
+}
+
+// Setup tracking eyes!
+const eyes = document.querySelectorAll(".eye");
+
+// Listen to user mouse movement
+document.addEventListener("mousemove", updateEyes);
+
+// Define our function which will run as the mouse moves
+function updateEyes (event) {
+    // Let's update each of the eyes independently
+    for ( const eye of eyes ) {
+        // Get the current eye's pupil, and metrics about it
+        const pupil = eye.querySelector(".pupil");
+        const shape = eye.getBoundingClientRect();
+        // Get the distance between the mouse and the pupil
+        const dx = event.clientX - (shape.left + shape.width / 2);
+        const dy = event.clientY - (shape.top + shape.height / 2);
+        // Determine the angle to orient the pupils to the mouse
+        const angle = Math.atan2(dy, dx);
+        const x = Math.cos(angle) * 10;
+        const y = Math.sin(angle) * 10;
+        // Update the position of the pupils
+        // "translate${x}" - `translate${x}`
+        pupil.style.transform = `translate(${x}px, ${y}px)`;
+    }
 }
