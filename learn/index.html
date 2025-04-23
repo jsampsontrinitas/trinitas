@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>JS / DOM Teaching Tool</title>
+    <title>JS/DOM Teaching Tool</title>
     <!-- CodeMirror 5 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.17/lib/codemirror.min.css">
     <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.17/lib/codemirror.min.js"></script>
@@ -22,7 +22,7 @@
     <script src="https://cdn.jsdelivr.net/npm/prettier@3.5.3/standalone.min.js"></script>
     <!-- Our files -->
     <link rel="stylesheet" href="index.css">
-    <script src="index.js" defer></script>
+    <script type="module" src="index.js" defer></script>
 </head>
 
 <body>
@@ -31,8 +31,8 @@
         <button id="prevBtn">⟵ Prev</button>
         <button id="nextBtn">Next ⟶</button>
         <button id="testsTabBtn">Tests</button>
-        <button id="previewTabBtn" disabled>Browser Output</button>
-        <button id="runBtn">Run Tests ▶</button>
+        <button id="previewTabBtn" disabled>Browser Output</button>
+        <button id="runBtn">Run Tests ▶</button>
     </header>
     <main>
         <section class="pane top">
@@ -49,6 +49,16 @@
                     <button id="formatBtn" style="margin-left:.5rem">Format</button>
                 </header>
                 <textarea id="textAreaEditor"></textarea>
+                <section id="statsContainer">
+                    <ul>
+                        <li data-key="lines" data-label="Lines">0</li>
+                        <li data-key="functions" data-label="Funcs">0</li>
+                        <li data-key="variables" data-label="Variables">0</li>
+                        <li data-key="loops" data-label="Loops">0</li>
+                        <li data-key="branches" data-label="Branches">0</li>
+                        <li data-key="maxdepth" data-label="MaxDepth">0</li>
+                    </ul>
+                </section>
             </section>
         </section>
         <section class="pane bottom">
@@ -62,7 +72,7 @@
                 <header>
                     <h2 id="paneTitle">Tests</h2>
                 </header>
-                <div id="testsOut" class="pane-content">Press Run Tests</div>
+                <div id="testsOut" class="pane-content">Press Run Tests</div>
                 <div id="previewWrap" class="pane-content hidden" style="padding:0">
                     <iframe id="previewFrame" style="border:0;width:100%;height:100%"></iframe>
                 </div>
