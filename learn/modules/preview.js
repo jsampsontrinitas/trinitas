@@ -1,8 +1,8 @@
-import * as dom from "./dom.js";
-import { scenarios } from "./scenarios.js";
+import dom from "./dom.js";
+import scenarios from "./scenarios.js";
 
 export function updatePreview() {
-  dom.previewFrame.srcdoc = buildDoc(scenarios[current]);
+  dom.setPreviewFrameSourceHTML(buildDoc(scenarios.getCurrentScenario()));
 }
 
 /**

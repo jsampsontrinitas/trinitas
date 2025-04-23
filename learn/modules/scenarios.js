@@ -1,37 +1,53 @@
 import dom from "./dom.js";
+import { updatePreview } from "./preview.js";
 import { execUserJS } from "./runner.js";
 
 export let currentIndex = 0;
 export let currentScenarioFile = "";
 
-export const scenarios = [
-  {
-    id: "add-two-numbers",
-    title: "Add Two Numbers",
-    difficulty: "beginner",
-    defaultFile: "script.js",
-    instructions:
-      "Implement <code>add(a,b)</code>. The function needs to return the sum of the two arguments provided when called.",
-    files: {
-      "script.js": `
-        function add(a, b) {
-          /* TODO */
-        }
-        console.log(add(2, 3));
-      `,
-    },
-    tests: [
-      {
-        desc: "add(2, 3) = 5",
-        fn: "return add(2,3)===5;",
-      },
-      {
-        desc: "add(5, 10) = 15",
-        fn: "return add(5,10)===15;",
-      },
-    ],
-  },
-]; // await fetch("scenarios/details.json");
+// export const scenarios = [
+//   {
+//     id: "add-two-numbers",
+//     title: "Add Two Numbers",
+//     difficulty: "beginner",
+//     defaultFile: "script.js",
+//     instructions:
+//       "Implement <code>add(a,b)</code>. The function needs to return the sum of the two arguments provided when called.",
+//     files: {
+//       "script.js": `
+//         function add(a, b) {
+//           /* TODO */
+//         }
+//         console.log(add(2, 3));
+//       `,
+//     },
+//     tests: [
+//       {
+//         desc: "add(2, 3) = 5",
+//         fn: "return add(2,3)===5;",
+//       },
+//       {
+//         desc: "add(5, 10) = 15",
+//         fn: "return add(5,10)===15;",
+//       },
+//     ],
+//   },
+// ];
+
+const scenarios = [];
+
+async function init () {
+  console.info("Loading scenarios...");
+  // Run `node scenarios/build.js` from /learn to generate the
+  // scenarios file. This will create a `scenarios/details.json`
+  // file that contains all the scenarios in JSON format.
+  const response = await fetch("./scenarios/details.json");
+  const data = await response.json();
+  for ( const scenario of data) {
+    scenarios.push(scenario);
+  }
+  console.info("Loaded scenarios:", scenarios.length);
+}
 
 function getAll() {
   return scenarios;
@@ -95,11 +111,14 @@ export function loadScenario(index = 0) {
 }
 
 function populateFileSelectorFromScenario(scenario) {
-  dom.UI.clearScenarioSelectorOptions();
-  Object.keys(scenario.files).forEach(dom.UI.addScenarioFilesOption);
+  dom.UI.clearScenarioFileSelectorOptions();
+  Object.keys(scenario.files).forEach(( filename ) => {
+    dom.UI.addScenarioFilesOption(filename, filename);
+  });
 }
 
 export default {
+  init,
   getAll,
   setInitialScenario,
   setCurrentScenario,
@@ -110,4 +129,5 @@ export default {
   setCurrentScenarioFileContent,
   loadNext,
   loadPrevious,
+  loadScenario,
 };

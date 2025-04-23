@@ -24,6 +24,10 @@ const btnBrowserOutput = document.getElementById("previewTabBtn");
 const btnShowTests = document.getElementById("testsTabBtn");
 const btnRunTests = document.getElementById("runBtn");
 
+function setPreviewFrameSourceHTML(html) {
+  previewFrame.srcdoc = html;
+}
+
 const buttons = {
   btnFormatCode,
   btnBrowserOutput,
@@ -67,8 +71,23 @@ function addScenarioFilesOption(text, value) {
   scenarioFileSelector.add(new Option(text, value));
 }
 
-function clearScenarioSelectorOptions () {
-  scenarioSelector.innerHTML = "";
+function clearScenarioFileSelectorOptions () {
+  console.log("Clearing scenario selector options");
+  // Remove all options from the scenario selector
+  while (scenarioFileSelector.options.length > 0) {
+    scenarioFileSelector.remove(0);
+  }
+}
+
+function setSelectedScenarioFileByValue(value) {
+  // Set the selected scenario file in the selector
+  for ( const option of scenarioFileSelector.options ) {
+    if ( option.value === value ) {
+      scenarioFileSelector.selectedIndex = option.index;
+      return;
+    }
+  }
+  throw new Error("Scenario file not found in selector");
 }
 
 function clearConsole() {
@@ -77,6 +96,7 @@ function clearConsole() {
 
 function setupEventListeners() {
   scenarioFileSelector.addEventListener("change", (event) => {
+    console.log("Scenario file changed to: " + event.target.value);
     editor.setCurrentScenarioFile(event.target.value);
     scenarios.setCurrentScenarioFile(event.target.value);
   });
@@ -88,25 +108,7 @@ function setupEventListeners() {
   nextScenarioButton.addEventListener("click", scenarios.loadNext);
   previousScenarioButton.addEventListener("click", scenarios.loadPrevious);
 
-  btnFormatCode.addEventListener("click", async () => {
-    const code = editor.getCodeMirrorInstance().getValue();
-    const currentFile = scenarios.getCurrentScenarioFile();
-    let parser = "babel";
-
-    if (currentFile.endsWith(".css")) parser = "css";
-    else if (currentFile.endsWith(".html")) parser = "html";
-
-    try {
-      const formatted = await prettier.format(code, {
-        parser,
-        plugins: prettierPlugins,
-      });
-      editor.getCodeMirrorInstance().setValue(formatted);
-    } catch (e) {
-      logLine("Format error: " + e.message);
-    }
-  });
-
+  btnFormatCode.addEventListener("click", editor.formatCurrentFile);
   btnRunTests.addEventListener("click", runTests);
 
   btnShowTests.addEventListener("click", () => {
@@ -145,10 +147,12 @@ export function updateStatsContainer(stats) {
 
 export default {
   init,
+  setPreviewFrameSourceHTML,
   UI: {
     setInstructions,
     setSelectedScenarioIndex,
-    clearScenarioSelectorOptions,
+    setSelectedScenarioFileByValue,
+    clearScenarioFileSelectorOptions,
     addScenarioFilesOption,
     setButtonDisabled,
     clearConsole,

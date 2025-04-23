@@ -1,1 +1,154 @@
-{}
+[
+  {
+    "id": "add-two-numbers",
+    "title": "Add Two Numbers",
+    "difficulty": "beginner",
+    "defaultFile": "script.js",
+    "tests": [
+      {
+        "desc": "add(2, 3) = 5",
+        "fn": "return add(2,3)===5;"
+      },
+      {
+        "desc": "add(5, 10) = 15",
+        "fn": "return add(5,10)===15;"
+      }
+    ],
+    "instructions": "Implement <code>add(a,b)</code>. The function needs to return the sum of the two arguments provided when called.",
+    "files": {
+      "script.js": "function add(a, b) {\n  /* TODO */\n}\n\nconsole.log(add(2, 3));\n"
+    }
+  },
+  {
+    "id": "click-counter",
+    "title": "Click Counter",
+    "difficulty": "beginner",
+    "defaultFile": "index.html",
+    "tests": [
+      {
+        "desc": "increments after click",
+        "fn": "\n          const btn = document.getElementById('btn');\n          const span = document.getElementById('count');\n          btn.click();  // 1\n          btn.click();  // 2\n          return span.textContent === \"2\";\n        "
+      }
+    ],
+    "instructions": "<p>When the button is clicked, increment the number inside the <code>&lt;span id=\"count\"&gt;</code>.</p>\n<p class=\"hint\">You can convert the current text to a number with <code>parseInt</code>, <code>Number()</code>, or unary&nbsp;<code>+</code>, then set/update the <code>.textContent</code> property.</p>",
+    "files": {
+      "index.html": "<button id=\"btn\">Clicked <span id=\"count\">0</span> times</button>",
+      "script.js": "function setup() {\n  const btn = document.getElementById(\"btn\");\n  const count = document.getElementById(\"count\");\n\n  btn.addEventListener(\"click\", () => {\n    /* TODO */\n  });\n}\n\nsetup();\n"
+    }
+  },
+  {
+    "id": "factorial",
+    "title": "Factorial",
+    "difficulty": "beginner",
+    "defaultFile": "script.js",
+    "tests": [
+      {
+        "desc": "factorial(0) = 1",
+        "fn": "return factorial(0)===1;"
+      },
+      {
+        "desc": "factorial(5) = 120",
+        "fn": "return factorial(5)===120;"
+      }
+    ],
+    "instructions": "<p>Implement <code>factorial(n)</code> recursively or with a loop. Remember: <code>0!</code> is <code>1</code>.</p>",
+    "files": {
+      "script.js": "function factorial(n) {\n  /* TODO */\n}\n\nconsole.log(factorial(5)); // 120\n"
+    }
+  },
+  {
+    "id": "filter-even-numbers",
+    "title": "Filter Even Numbers",
+    "difficulty": "beginner",
+    "defaultFile": "script.js",
+    "tests": [
+      {
+        "desc": "[1,2,3] → [2]",
+        "fn": "return JSON.stringify(filterEven([1,2,3]))==='[2]';"
+      },
+      {
+        "desc": "[4,5,6,7] → [4,6]",
+        "fn": "return JSON.stringify(filterEven([4,5,6,7]))==='[4,6]';"
+      }
+    ],
+    "instructions": "<p>Complete <code>filterEven(nums)</code> so it returns a <strong>new</strong> array containing only the even numbers in <em>nums</em>.</p>\n<p>Try <code>Array.prototype.filter</code> with a modulus check (<code>n % 2 === 0</code>).</p>",
+    "files": {
+      "script.js": "function filterEven(nums) {\n  /* TODO */\n}\n\nconsole.log(filterEven([1, 2, 3, 4])); // [2,4]\n"
+    }
+  },
+  {
+    "id": "highlight-long-words",
+    "title": "Highlight Long Words",
+    "difficulty": "intermediate",
+    "defaultFile": "index.html",
+    "tests": [
+      {
+        "desc": "words >6 chars are wrapped",
+        "fn": "\n          document.getElementById('doit').click();\n          // JavaScript, enables, applications\n          return document.querySelectorAll('#text .highlight').length === 3;\n        "
+      }
+    ],
+    "instructions": "<p>On button click, wrap every word <strong>longer than 6 letters</strong> inside each <code>&lt;p&gt;</code> with a <code>&lt;span class=\"highlight\"&gt;</code>.</p>\n<p>Use <code>Element.querySelectorAll</code>, string <code>.split()</code>, and <code>Array.prototype.map</code>.</p>\n<style>\n    .highlight { background: yellow; }\n</style>",
+    "files": {
+      "index.html": "<button id=\"doit\">Highlight!</button>\n<p id=\"text\">JavaScript enables interactive web applications effortlessly.</p>",
+      "script.js": "function setup() {\n  const btn = document.getElementById(\"doit\");\n  const text = document.getElementById(\"text\");\n\n  btn.addEventListener(\"click\", () => {\n    /* TODO */\n  });\n}\n\nsetup();\n"
+    }
+  },
+  {
+    "id": "reverse-a-string",
+    "title": "Reverse-a-String",
+    "difficulty": "beginner",
+    "defaultFile": "script.js",
+    "tests": [
+      {
+        "desc": "reverse(\"racecar\") → \"racecar\"",
+        "fn": "return reverse(\"racecar\")===\"racecar\";"
+      },
+      {
+        "desc": "reverse(\"JavaScript\") → \"tpircSavaJ\"",
+        "fn": "return reverse(\"JavaScript\")===\"tpircSavaJ\";"
+      }
+    ],
+    "instructions": "<p>Write <code>reverse(str)</code> so it returns <em>str</em> backwards.</p>\n<p>Hints: split the string into an array (<code>String.prototype.split</code>), reverse it (<code>Array.prototype.reverse</code>), then join it back together.</p>",
+    "files": {
+      "script.js": "// Return a new string that is the reverse of 'str'\nfunction reverse(str) {\n  /* TODO */\n}\n\nconsole.log(reverse(\"hello\")); // \"olleh\"\n"
+    }
+  },
+  {
+    "id": "sum-object-values",
+    "title": "Sum Object Values",
+    "difficulty": "beginner",
+    "defaultFile": "script.js",
+    "tests": [
+      {
+        "desc": "{x:2,y:8} → 10",
+        "fn": "return sumValues({x:2,y:8})===10;"
+      },
+      {
+        "desc": "{a:1,b:'two',c:3} → 4",
+        "fn": "return sumValues({a:1,b:'two',c:3})===4;"
+      }
+    ],
+    "instructions": "<p>Create <code>sumValues(obj)</code> that adds up all <em>own</em> numeric properties of <em>obj</em>. Use <code>Object.values</code> and <code>Array.prototype.reduce</code>.</p>",
+    "files": {
+      "script.js": "function sumValues(obj) {\n  /* TODO */\n}\n\nconsole.log(sumValues({ a: 1, b: 2, c: 3 })); // 6\n"
+    }
+  },
+  {
+    "id": "toggle-box",
+    "title": "Toggle Box",
+    "difficulty": "beginner",
+    "defaultFile": "index.html",
+    "tests": [
+      {
+        "desc": "toggle works",
+        "fn": "\n        const box = document.getElementById('box');\n        box.click();\n        \n        return box.classList.contains('active');\n      "
+      }
+    ],
+    "instructions": "Toggle class active on click.",
+    "files": {
+      "index.html": "<div id=box>Click me</div>",
+      "script.js": "function setup() {\n  const box = document.getElementById(\"box\");\n  box.addEventListener(\"click\", () => box.classlist.toggle(\"active\"));\n}\n\nsetup();\n",
+      "style.css": "#box {\n  width: 120px;\n  border: 4px solid red;\n}\n\n#box.active {\n  border-color: green;\n}\n"
+    }
+  }
+]

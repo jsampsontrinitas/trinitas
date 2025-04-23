@@ -1,5 +1,6 @@
 import dom from "./modules/dom.js";
 import editor from "./modules/editor.js";
+import scenarios from "./modules/scenarios.js";
 
 window.addEventListener("message", (event) => {
   if (event.data?.type === "console") {
@@ -9,6 +10,7 @@ window.addEventListener("message", (event) => {
 });
 
 async function main() {
+  await scenarios.init();
   dom.init();
   editor.init();
 }
