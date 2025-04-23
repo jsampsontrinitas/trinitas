@@ -1,4 +1,4 @@
-import * as dom from "./dom.js";
+import dom from "./dom.js";
 
 export function debounce(fn, ms) {
   let t;
@@ -18,7 +18,7 @@ export function modeFor(filename) {
 
 export function logLine(text) {
   const logEntry = document.createElement("div");
-  dom.consoleContainer.appendChild(logEntry).textContent = text;
+  dom.UI.CONTAINERS.consoleContainer.appendChild(logEntry).textContent = text;
 }
 
 export function gatherJS(scenario) {

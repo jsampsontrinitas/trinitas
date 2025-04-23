@@ -1,4 +1,3 @@
-import { textareaElement } from "./dom.js";
 import { debounce, modeFor } from "./utils.js";
 import { analyze } from "./analyzer.js";
 import { execUserJS } from "./runner.js";
@@ -8,7 +7,10 @@ const astMarks = [];
 
 // Initialize a code mirror instance
 const options = { lineNumbers: true, mode: "javascript" };
-const codeMirror = CodeMirror.fromTextArea(textareaElement, options);
+const codeMirror = CodeMirror.fromTextArea(
+  document.getElementById("textAreaEditor"),
+  options
+);
 
 codeMirror.on("change", debounce(onEdit, 400));
 

@@ -15,7 +15,6 @@ const testsContainer = document.getElementById("testsOut");
 
 const previewContainer = document.getElementById("previewWrap");
 const previewFrame = document.getElementById("previewFrame");
-export const textareaElement = document.getElementById("textAreaEditor");
 
 // Switches beteen "Tests" and "Browser Output" labels
 const paneTitle = document.getElementById("paneTitle");
@@ -25,6 +24,19 @@ const btnBrowserOutput = document.getElementById("previewTabBtn");
 const btnShowTests = document.getElementById("testsTabBtn");
 const btnRunTests = document.getElementById("runBtn");
 
+const buttons = {
+  btnFormatCode,
+  btnBrowserOutput,
+  btnShowTests,
+  btnRunTests,
+};
+
+const containers = {
+  consoleContainer,
+  instructionsContainer,
+  testsContainer,
+};
+
 function init() {
   setupDOM();
   setupEventListeners();
@@ -33,12 +45,30 @@ function init() {
 function setupDOM() {
   // Add scenarios to selector menu
   for (const { id, title } of scenarios.getAll()) {
-    dom.scenarioSelector.add(new Option(title, id));
+    scenarioSelector.add(new Option(title, id));
+  }
+}
+
+function setButtonDisabled (button, disabled) {
+  if ( Object.values(buttons).includes(button) ) {
+    button.disabled = disabled;
   }
 }
 
 function setInstructions(html) {
   instructionsContainer.innerHTML = html;
+}
+
+function setSelectedScenarioIndex(index) {
+  scenarioSelector.value = index;
+}
+
+function addScenarioFilesOption(text, value) {
+  scenarioFileSelector.add(new Option(text, value));
+}
+
+function clearScenarioSelectorOptions () {
+  scenarioSelector.innerHTML = "";
 }
 
 function clearConsole() {
@@ -60,7 +90,7 @@ function setupEventListeners() {
 
   btnFormatCode.addEventListener("click", async () => {
     const code = editor.getCodeMirrorInstance().getValue();
-    const currentFile = scenario.getCurrentScenarioFile();
+    const currentFile = scenarios.getCurrentScenarioFile();
     let parser = "babel";
 
     if (currentFile.endsWith(".css")) parser = "css";
@@ -117,6 +147,12 @@ export default {
   init,
   UI: {
     setInstructions,
+    setSelectedScenarioIndex,
+    clearScenarioSelectorOptions,
+    addScenarioFilesOption,
+    setButtonDisabled,
     clearConsole,
+    BUTTONS: buttons,
+    CONTAINERS: containers,
   },
 };

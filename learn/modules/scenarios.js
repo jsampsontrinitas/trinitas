@@ -1,5 +1,4 @@
 import dom from "./dom.js";
-import editor from "./editor.js";
 import { execUserJS } from "./runner.js";
 
 export let currentIndex = 0;
@@ -59,47 +58,45 @@ function getCurrentScenarioFile() {
 }
 
 function loadPrevious() {
-  loadScenario((current - 1 + scenarios.length) % scenarios.length);
+  loadScenario((currentIndex - 1 + scenarios.length) % scenarios.length);
 }
 
 function loadNext() {
-  loadScenario((current + 1) % scenarios.length);
+  loadScenario((currentIndex + 1) % scenarios.length);
 }
 
 function setCurrentScenarioFileContent(content) {
-  scenarios[current].files[currentFile] = content;
+  getCurrentScenario().files[currentScenarioFile] = content;
 }
 
 function getCurrentScenarioFileContent() {
-  return scenarios[current].files[currentFile];
+  return getCurrentScenario().files[currentFile];
 }
 
 export function loadScenario(index = 0) {
-  current = index;
+  setCurrentScenario(index);
   const scenario = scenarios[index];
-  dom.scenarioSelector.value = index;
+  dom.UI.setSelectedScenarioIndex(index);
   dom.UI.setInstructions(scenario.instructions);
   dom.UI.clearConsole();
-  populateFileSelector(scenario);
+  populateFileSelectorFromScenario(scenario);
 
   const hasHtml = scenario.files.hasOwnProperty("index.html");
 
-  dom.btnBrowserOutput.disabled = !hasHtml;
+  dom.UI.setButtonDisabled(dom.UI.BUTTONS.btnBrowserOutput, !hasHtml);
 
   if (!hasHtml) {
-    testsTabBtn.click();
+    dom.UI.BUTTONS.btnShowTests.click();
   }
 
-  setCurrentFile(Object.keys(scenario.files)[0]);
+  setCurrentScenarioFile(Object.keys(scenario.files)[0]);
 
   hasHtml ? updatePreview() : execUserJS();
 }
 
-function populateFileSelector(scenario) {
-  dom.scenarioFileSelector.innerHTML = "";
-  for (const filename of Object.keys(scenario.files)) {
-    dom.scenarioFileSelector.add(new Option(filename));
-  }
+function populateFileSelectorFromScenario(scenario) {
+  dom.UI.clearScenarioSelectorOptions();
+  Object.keys(scenario.files).forEach(dom.UI.addScenarioFilesOption);
 }
 
 export default {
