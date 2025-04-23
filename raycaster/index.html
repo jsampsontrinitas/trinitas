@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Raycaster Demo</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #222;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        #game {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            margin: 0 auto;
+            align-items: center;
+            box-shadow: 0 1em 3em rgba(0, 0, 0, 0.5);
+            background-image: linear-gradient(to bottom, #72aaf3 50%, #222 50%);
+        }
+
+        .ray {
+            flex: 1;
+            background: black;
+            height: 50%;
+        }
+
+        #minimap {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid #fff;
+            transform-origin: bottom left;
+
+            &:hover {
+                transform: scale(2);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="minimap" width="200" height="200"></canvas>
+    <div id="game"></div>
+
+    <script>
+        const game = document.getElementById('game');
+        const minimap = document.getElementById('minimap');
+        const ctx = minimap.getContext('2d');
+        const rays = [];
+        const numRays = 256; //512;
+
+        for (let i = 0; i < numRays; i++) {
+            const div = document.createElement('div');
+            div.classList.add('ray');
+            game.appendChild(div);
+            rays.push(div);
+        }
+
+        // Simple map: 1 is wall, 0 is empty space
+        const map = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        const xmap = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 1, 1, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 1, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+
+        const mapHeight = map.length;
+        const mapWidth = map[0].length;
+
+        const player = { x: 1.5, y: 1.5, angle: 0, fov: Math.PI / 3 };
+
+        function castRays() {
+            for (let i = 0; i < numRays; i++) {
+                const rayAngle = (player.angle - player.fov / 2) + (i / numRays) * player.fov;
+
+                const rayX = Math.cos(rayAngle);
+                const rayY = Math.sin(rayAngle);
+
+                let mapX = Math.floor(player.x);
+                let mapY = Math.floor(player.y);
+
+                const deltaDistX = Math.abs(1 / rayX);
+                const deltaDistY = Math.abs(1 / rayY);
+
+                let sideDistX, sideDistY;
+                let stepX, stepY;
+
+                if (rayX < 0) { stepX = -1; sideDistX = (player.x - mapX) * deltaDistX; }
+                else { stepX = 1; sideDistX = (mapX + 1 - player.x) * deltaDistX; }
+
+                if (rayY < 0) { stepY = -1; sideDistY = (player.y - mapY) * deltaDistY; }
+                else { stepY = 1; sideDistY = (mapY + 1 - player.y) * deltaDistY; }
+
+                let hit = false;
+                let hitVertical = false;
+
+                while (!hit) {
+                    if (sideDistX < sideDistY) {
+                        sideDistX += deltaDistX;
+                        mapX += stepX;
+                        hitVertical = true;
+                    } else {
+                        sideDistY += deltaDistY;
+                        mapY += stepY;
+                        hitVertical = false;
+                    }
+
+                    if (mapX < 0 || mapX >= mapWidth || mapY < 0 || mapY >= mapHeight || map[mapY][mapX] === 1) {
+                        hit = true;
+                    }
+                }
+
+                const distance = hitVertical
+                    ? (sideDistX - deltaDistX)
+                    : (sideDistY - deltaDistY);
+
+
+                // Closer walls are brighter; walls are darker the further away they are.
+                // We have a max brightness of 0.85 and a min brightness of 0.25. We assume a max distance of 10.
+                // The brightness is calculated as a function of the distance from the player to the wall.
+                const shading = Math.max(0.25, Math.min(0.85, 1 - (distance / 10)));
+
+                // Correct fish-eye effect
+                const correctedDistance = distance * Math.cos(rayAngle - player.angle);
+
+                rays[i].dataset.angle = rayAngle;
+                rays[i].dataset.distance = distance;
+                rays[i].style.height = Math.min(100 / correctedDistance, 100) + "%";
+
+                const wallColor = hitVertical
+                    ? `rgb(${[139, 69, 19].map(x => x * shading).join(',')})`
+                    : `rgb(${[112, 128, 144].map(x => x * shading).join(', ')})`;
+
+                rays[i].style.background = wallColor;
+            }
+        }
+
+
+        function isWalkable(x, y) {
+            const floorX = Math.floor(x);
+            const floorY = Math.floor(y);
+            return map[floorY][floorX] === 0;
+        }
+
+        const pressedKeys = new Set();
+
+        window.addEventListener('keydown', (e) => {
+            pressedKeys.add(e.key);
+        });
+
+        window.addEventListener('keyup', (e) => {
+            pressedKeys.delete(e.key);
+        });
+
+        function updatePlayerPosition() {
+            let moveStep = 0.1;
+            let nextX = player.x;
+            let nextY = player.y;
+
+            // Support strafe movement
+            if (pressedKeys.has('a') || pressedKeys.has('d')) {
+                const strafeAngle = player.angle + Math.PI / 2;
+                const strafeMoveStep = 0.05; // Adjust this value for strafe speed
+                const strafeDirection = pressedKeys.has('a') ? -1 : 1;
+                nextX += Math.cos(strafeAngle) * strafeMoveStep * strafeDirection;
+                nextY += Math.sin(strafeAngle) * strafeMoveStep * strafeDirection;
+            }
+
+            // Handle player rotation and movement
+            if (pressedKeys.has('ArrowLeft')) player.angle -= 0.1;
+            if (pressedKeys.has('ArrowRight')) player.angle += 0.1;
+            if (pressedKeys.has('ArrowUp') || pressedKeys.has('w')) {
+                nextX += Math.cos(player.angle) * moveStep;
+                nextY += Math.sin(player.angle) * moveStep;
+            }
+            if (pressedKeys.has('ArrowDown') || pressedKeys.has('s')) {
+                nextX -= Math.cos(player.angle) * moveStep;
+                nextY -= Math.sin(player.angle) * moveStep;
+            }
+
+            // User must remain within "0" cells and map bounds
+            if (isWalkable(nextX, nextY)) {
+                player.x = nextX;
+                player.y = nextY;
+            }
+        }
+
+        /********************************
+         * POINTER‑LOCK MOUSE LOOK      *
+         ********************************/
+        const sensitivity = 0.002; // tweak for faster/slower turning
+
+        function onMouseMove(e) {
+            // Horizontal movement rotates the camera
+            player.angle += e.movementX * sensitivity;
+            // keep angle in [0, 2π)
+            if (player.angle < 0) player.angle += Math.PI * 2;
+            else if (player.angle >= Math.PI * 2) player.angle -= Math.PI * 2;
+            castRays();
+        }
+
+        function handlePointerLockChange() {
+            if (document.pointerLockElement === game) {
+                document.addEventListener('mousemove', onMouseMove);
+            } else {
+                document.removeEventListener('mousemove', onMouseMove);
+            }
+        }
+
+        // click the play area to capture the pointer
+        game.addEventListener('click', () => {
+            game.requestPointerLock();
+        });
+
+        minimap.addEventListener('click', (event) => {
+            // Permit converting "0" cells to "1" cells in the map if they aren't at the map bounds
+            const cellSize = minimap.width / mapWidth;
+            const x = Math.floor(event.offsetX / cellSize);
+            const y = Math.floor(event.offsetY / cellSize);
+            console.log(`Clicked on cell: (${x}, ${y})`);
+            if (x > 0 && x < mapWidth - 1 && y > 0 && y < mapHeight - 1) {
+                map[y][x] = map[y][x] === 0 ? 1 : 0; // Toggle between wall and empty space
+            }
+
+        });
+
+        document.addEventListener('pointerlockchange', handlePointerLockChange);
+
+        function drawMinimap() {
+            ctx.clearRect(0, 0, minimap.width, minimap.height);
+
+            const cellSize = minimap.width / mapWidth;
+            const playerSize = cellSize * 0.2; // Player size in minimap
+            const playerX = player.x * cellSize;
+            const playerY = player.y * cellSize;
+            const playerAngle = player.angle * (180 / Math.PI); // Convert to degrees
+
+            // Draw map
+            for (let y = 0; y < mapHeight; y++) {
+                for (let x = 0; x < mapWidth; x++) {
+                    if (map[y][x] === 1) {
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+
+            // Draw rays
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            for (let i = 0; i < numRays; i++) {
+                const rayAngle = rays[i].dataset.angle;
+                const rayLength = rays[i].dataset.distance;
+                const endX = player.x * cellSize + Math.cos(rayAngle) * rayLength * cellSize;
+                const endY = player.y * cellSize + Math.sin(rayAngle) * rayLength * cellSize;
+                ctx.beginPath();
+                ctx.moveTo(playerX, playerY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+
+            // Draw player
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.arc(playerX, playerY, playerSize, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw grid lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            for (let x = 0; x < mapWidth; x++) {
+                ctx.beginPath();
+                ctx.moveTo(x * cellSize, 0);
+                ctx.lineTo(x * cellSize, minimap.height);
+                ctx.stroke();
+            }
+
+            for (let y = 0; y < mapHeight; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, y * cellSize);
+                ctx.lineTo(minimap.width, y * cellSize);
+                ctx.stroke();
+            }
+
+            // Draw player coordinates and angle to bottom-center of minimap
+            ctx.fillStyle = 'white';
+            ctx.font = '10px Arial';
+            const X = player.x;
+            const Y = player.y;
+            const A = (player.angle * 180 / Math.PI).toFixed(0);
+            const V = (player.fov * 180 / Math.PI).toFixed(0);
+            const F = Math.round(1000 / (performance.now() - lastTime));
+
+            const text = `X: ${X.toFixed(2)} Y: ${Y.toFixed(2)} A: ${A}° V: ${V}° F: ${F}`;
+            const textWidth = ctx.measureText(text).width;
+
+            ctx.fillText(text, minimap.width / 2 - textWidth / 2, minimap.height - 8);
+        }
+
+        const fps = 30; // frames per second
+        let lastTime = 0;
+
+        function gameLoop() {
+            // Limit to 30fps
+            const now = performance.now();
+            if (now - lastTime < 1000 / fps) {
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+            lastTime = now;
+            // Update player position and cast rays
+            updatePlayerPosition();
+            castRays();
+            drawMinimap();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+
+</html>
