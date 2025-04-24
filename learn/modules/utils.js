@@ -17,8 +17,18 @@ export function modeFor(filename) {
 }
 
 export function logLine(text) {
-  const logEntry = document.createElement("div");
-  dom.UI.CONTAINERS.consoleContainer.appendChild(logEntry).textContent = text;
+  const newEntry = document.createElement("div");
+  newEntry.textContent = text;
+
+  const container = dom.UI.CONTAINERS.consoleContainer;
+  const mostRecentEntry = container.firstElementChild;
+
+  if (mostRecentEntry) {
+    container.insertBefore(newEntry, mostRecentEntry);
+    return;
+  }
+
+  container.appendChild(newEntry);
 }
 
 export function gatherJS(scenario) {

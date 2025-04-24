@@ -1,7 +1,7 @@
 import { gatherJS } from "./utils.js";
 import scenarios from "./scenarios.js";
-import { logLine } from "./utils.js";
-import * as dom from "./dom.js";
+import dom from "./dom.js";
+import preview from "./preview.js";
 
 export function execUserJS() {
   const js = gatherJS(scenarios.getCurrentScenario());
@@ -21,7 +21,22 @@ export function captureConsole(userCodeExecutorFunction) {
     orig[key] = console[key];
     console[key] = (...args) => {
       orig[key](...args);
-      logLine(`${key}: ${args.join(" ")}`);
+
+      // We post these to the parent window for logging in the UI
+      // The parent window contains the following listener:
+      // window.addEventListener("message", (event) => {
+      //    if (event.data?.type === "console") {
+      //      const { kind, args } = event.data;
+      //      logLine(`${kind}: ${args.join(" ")}`);
+      //    }
+      // });
+      //
+      // This is in index.js
+
+      window.parent.postMessage(
+        { type: "console", kind: key, args: [...args] },
+        "*"
+      );
     };
   }
 
@@ -33,8 +48,12 @@ export function captureConsole(userCodeExecutorFunction) {
 }
 
 export function runTests() {
-  dom.testsContainer.textContent = "Running…";
+  dom.UI.CONTAINERS.testsContainer.textContent = "Running…";
   const currentScenario = scenarios.getCurrentScenario();
+
+  // TODO: We need to inject into the iframe our
+  // "capture console" logic so that we can capture console
+  // messages from the tests.
   const iframe = document.createElement("iframe");
   iframe.style.display = "none";
   document.body.append(iframe);
@@ -57,7 +76,7 @@ export function runTests() {
   };
 
   if (currentScenario.files.hasOwnProperty("index.html")) {
-    iframe.srcdoc = buildDoc(currentScenario);
+    iframe.srcdoc = preview.buildDoc(currentScenario);
     iframe.onload = () => finish(evalTests(iframe.contentWindow));
   } else {
     iframe.contentWindow.eval(gatherJS(currentScenario));
@@ -66,12 +85,24 @@ export function runTests() {
 }
 
 function displayTestResults(results) {
-  dom.testsContainer.innerHTML = results
-    .map(
-      (r) =>
-        `<div class="${r.pass ? "pass" : "fail"}">${r.pass ? "✔" : "✖"} ${
-          r.desc
-        }</div>`
-    )
-    .join("");
+  const container = dom.UI.CONTAINERS.testsContainer;
+  const fragment = document.createDocumentFragment();
+
+  for (const result of results) {
+    const element = document.createElement("div");
+    const className = result.pass ? "pass" : "fail";
+    const description = (result.pass ? "✔" : "✖") + result.desc;
+
+    element.classList.add(className);
+    element.textContent = description;
+    fragment.appendChild(element);
+  }
+
+  // Remove all elements from within the test container
+  for (const child of container.childNodes) {
+    child.remove();
+  }
+
+  // Add our document fragment as the only child
+  container.append(fragment);
 }

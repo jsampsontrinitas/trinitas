@@ -6,35 +6,6 @@ import { execUserJS } from "./runner.js";
 export let currentIndex = 0;
 export let currentScenarioFile = "";
 
-// export const scenarios = [
-//   {
-//     id: "add-two-numbers",
-//     title: "Add Two Numbers",
-//     difficulty: "beginner",
-//     defaultFile: "script.js",
-//     instructions:
-//       "Implement <code>add(a,b)</code>. The function needs to return the sum of the two arguments provided when called.",
-//     files: {
-//       "script.js": `
-//         function add(a, b) {
-//           /* TODO */
-//         }
-//         console.log(add(2, 3));
-//       `,
-//     },
-//     tests: [
-//       {
-//         desc: "add(2, 3) = 5",
-//         fn: "return add(2,3)===5;",
-//       },
-//       {
-//         desc: "add(5, 10) = 15",
-//         fn: "return add(5,10)===15;",
-//       },
-//     ],
-//   },
-// ];
-
 const scenarios = [];
 
 async function init() {
@@ -106,11 +77,9 @@ export function loadScenario(index = 0) {
     dom.UI.BUTTONS.btnShowTests.click();
   }
 
-  if (scenario.defaultFile) {
-    editor.setCurrentScenarioFile(scenario.defaultFile);
-  } else {
-    editor.setCurrentScenarioFile(Object.keys(scenario.files)[0]);
-  }
+  editor.setCurrentScenarioFile(
+    scenario.defaultFile ?? Object.keys(scenario.files)[0]
+  );
 
   hasHtml ? updatePreview() : execUserJS();
 }

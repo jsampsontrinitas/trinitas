@@ -1,150 +1,157 @@
 body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    height: 100vh;
-    display: grid;
-    grid-template-rows: 3rem 1fr
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 3rem 1fr;
 }
 
 body > header {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    padding: 0 .5rem;
-    background: #282c34;
-    color: #fff
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.5rem;
+  background: #282c34;
+  color: #fff;
 }
 
 main {
+  display: flex;
+  flex-direction: column;
+
+  section.pane {
+    flex: 1;
     display: flex;
-    flex-direction: column;
 
-    section.pane {
-        flex: 1;
-        display: flex;
-
-        &.top {
-            min-height: 70%;
-        }
-
-        #editorPane, #consolePane {
-            order: 0;
-        }
-
-        #instructionsPane, #testsPane {
-            order: 1;
-        }
-
-        section {
-            flex: 1;
-            display: flex;
-            overflow: auto;
-            flex-direction: column;
-            background: #fdfdfd;
-            border: 1px solid #bbb;
-    
-            header {
-                display: flex;
-                background: #eee;
-                border-bottom: 1px solid #bbb;
-                padding: 0.25rem 0.5rem;
-                font-size: 1rem;
-    
-                h2 {
-                    flex: 1;
-                    padding: 0; margin: 0;
-                }
-            }
-        }
+    &.top {
+      min-height: 70%;
     }
+
+    #editorPane,
+    #consolePane {
+      order: 0;
+    }
+
+    #instructionsPane,
+    #testsPane {
+      order: 1;
+    }
+
+    section {
+      flex: 1;
+      display: flex;
+      overflow: auto;
+      flex-direction: column;
+      background: #fdfdfd;
+      border: 1px solid #bbb;
+
+      header {
+        display: flex;
+        background: #eee;
+        border-bottom: 1px solid #bbb;
+        padding: 0.25rem 0.5rem;
+        font-size: 1rem;
+
+        h2 {
+          flex: 1;
+          padding: 0;
+          margin: 0;
+        }
+      }
+    }
+  }
 }
 
 #editorPane {
+  .CodeMirror {
+    flex: 1;
+  }
 
-    .CodeMirror {
+  #statsContainer {
+    flex: none;
+    border: none;
+    color: rgba(0, 0, 0, 0.5);
+    background: #ebebeb;
+    > ul {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      > li {
+        list-style: none;
         flex: 1;
-    }
+        font-family: monospace;
+        text-align: center;
+        font-size: 0.5rem;
+        padding: 0.5em 0.25em;
+        box-sizing: border-box;
 
-    #statsContainer {
-        flex: none;
-        border: none;
-        color: rgba(0, 0, 0, 0.5);
-        background: #ebebeb;
-        > ul {
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            > li {
-                list-style: none;
-                flex: 1;
-                font-family: monospace;
-                text-align: center;
-                font-size: 0.5rem;
-                padding: 0.5em 0.25em;
-                box-sizing: border-box;
-
-                &::before {
-                    content: attr(data-label) ": "
-                }
-
-                &.changed {
-                    animation: valueChanged 1s ease-out forwards;
-                }
-            }
+        &::before {
+          content: attr(data-label) ": ";
         }
+
+        &.changed {
+          animation: valueChanged 1s ease-out forwards;
+        }
+      }
     }
+  }
 }
 
 @keyframes valueChanged {
-    from { background: green }
-      to { background: transparent }
+  from {
+    background: green;
+  }
+  to {
+    background: transparent;
+  }
 }
 
 .pane-content {
-    flex: 1;
+  flex: 1;
 }
 
 #instructionsPane {
-    .pane-content {
-        padding: 0 1em;
-    }
+  .pane-content {
+    padding: 0 1em;
+  }
 }
 
 p.hint {
-    padding: 1rem;
-    margin: 0 -1rem;
-    font-size: 0.85em;
-    background: #f1f1f1;
+  padding: 1rem;
+  margin: 0 -1rem;
+  font-size: 0.85em;
+  background: #f1f1f1;
 
-    &::before {
-        content: "Hint:";
-        font-style: italic;
-        font-weight: bold;
-        margin-right: 1em;
-    }
+  &::before {
+    content: "Hint:";
+    font-style: italic;
+    font-weight: bold;
+    margin-right: 1em;
+  }
 }
 
 .hidden {
-    display: none
+  display: none;
 }
 
 .pass {
-    color: green;
-    font-weight: bold
+  color: green;
+  font-weight: bold;
 }
 
 .fail {
-    color: red;
-    font-weight: bold
+  color: red;
+  font-weight: bold;
 }
 
-button, select {
-    padding: .25rem .5rem;
-    font-size: .9rem
+button,
+select {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.9rem;
 }
 
 .CodeMirror .ast-warn {
-    background: #ffecec
+  background: #ffecec;
 }

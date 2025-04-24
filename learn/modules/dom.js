@@ -53,8 +53,8 @@ function setupDOM() {
   }
 }
 
-function setButtonDisabled (button, disabled) {
-  if ( Object.values(buttons).includes(button) ) {
+function setButtonDisabled(button, disabled) {
+  if (Object.values(buttons).includes(button)) {
     button.disabled = disabled;
   }
 }
@@ -71,7 +71,7 @@ function addScenarioFilesOption(text, value) {
   scenarioFileSelector.add(new Option(text, value));
 }
 
-function clearScenarioFileSelectorOptions () {
+function clearScenarioFileSelectorOptions() {
   console.log("Clearing scenario selector options");
   // Remove all options from the scenario selector
   while (scenarioFileSelector.options.length > 0) {
@@ -81,8 +81,8 @@ function clearScenarioFileSelectorOptions () {
 
 function setSelectedScenarioFileByValue(value) {
   // Set the selected scenario file in the selector
-  for ( const option of scenarioFileSelector.options ) {
-    if ( option.value === value ) {
+  for (const option of scenarioFileSelector.options) {
+    if (option.value === value) {
       scenarioFileSelector.selectedIndex = option.index;
       return;
     }
@@ -91,7 +91,7 @@ function setSelectedScenarioFileByValue(value) {
 }
 
 function clearConsole() {
-  consoleContainer.innerHTML = "";
+  for (const entry of consoleContainer.childNodes) entry.remove();
 }
 
 function setupEventListeners() {

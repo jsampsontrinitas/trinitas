@@ -1,4 +1,5 @@
 import dom from "./modules/dom.js";
+import { logLine } from "./modules/utils.js";
 import editor from "./modules/editor.js";
 import scenarios from "./modules/scenarios.js";
 

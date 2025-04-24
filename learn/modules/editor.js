@@ -67,7 +67,10 @@ function setCurrentScenarioFile(scenarioFileName) {
   codeMirror.setValue(scenario.files[scenarioFileName]);
   dom.UI.setSelectedScenarioFileByValue(scenarioFileName);
   clearMarks();
-  setTimeout(() => dom.UI.BUTTONS.btnFormatCode.click(), 10);
+  setTimeout(async () => {
+    await formatCurrentFile();
+    dom.UI.clearConsole();
+  }, 10);
   analyze();
 }
 

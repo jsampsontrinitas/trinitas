@@ -57,3 +57,5 @@ export function buildDoc(scenario) {
   // Return the result
   return html;
 }
+
+export default { buildDoc };
