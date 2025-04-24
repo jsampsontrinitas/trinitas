@@ -1,4 +1,5 @@
 import dom from "./dom.js";
+import editor from "./editor.js";
 import { updatePreview } from "./preview.js";
 import { execUserJS } from "./runner.js";
 
@@ -36,14 +37,14 @@ export let currentScenarioFile = "";
 
 const scenarios = [];
 
-async function init () {
+async function init() {
   console.info("Loading scenarios...");
   // Run `node scenarios/build.js` from /learn to generate the
   // scenarios file. This will create a `scenarios/details.json`
   // file that contains all the scenarios in JSON format.
   const response = await fetch("./scenarios/details.json");
   const data = await response.json();
-  for ( const scenario of data) {
+  for (const scenario of data) {
     scenarios.push(scenario);
   }
   console.info("Loaded scenarios:", scenarios.length);
@@ -105,14 +106,18 @@ export function loadScenario(index = 0) {
     dom.UI.BUTTONS.btnShowTests.click();
   }
 
-  setCurrentScenarioFile(Object.keys(scenario.files)[0]);
+  if (scenario.defaultFile) {
+    editor.setCurrentScenarioFile(scenario.defaultFile);
+  } else {
+    editor.setCurrentScenarioFile(Object.keys(scenario.files)[0]);
+  }
 
   hasHtml ? updatePreview() : execUserJS();
 }
 
 function populateFileSelectorFromScenario(scenario) {
   dom.UI.clearScenarioFileSelectorOptions();
-  Object.keys(scenario.files).forEach(( filename ) => {
+  Object.keys(scenario.files).forEach((filename) => {
     dom.UI.addScenarioFilesOption(filename, filename);
   });
 }

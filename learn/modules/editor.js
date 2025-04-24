@@ -28,6 +28,7 @@ const codeMirror = CodeMirror.fromTextArea(
 codeMirror.on("change", debounce(onEdit, 400));
 
 function init() {
+  // Load scenario at index 0
   scenarios.loadScenario(0);
 }
 

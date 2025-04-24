@@ -64,7 +64,7 @@ function setInstructions(html) {
 }
 
 function setSelectedScenarioIndex(index) {
-  scenarioSelector.value = index;
+  scenarioSelector.options[index].selected = true;
 }
 
 function addScenarioFilesOption(text, value) {
@@ -102,7 +102,7 @@ function setupEventListeners() {
   });
 
   scenarioSelector.addEventListener("change", (event) => {
-    scenarios.setCurrentScenario(event.target.value);
+    scenarios.loadScenario(event.target.selectedIndex);
   });
 
   nextScenarioButton.addEventListener("click", scenarios.loadNext);
