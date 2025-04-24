@@ -21,8 +21,8 @@
         }
 
         #game {
-            width: 100vw;
-            height: 100vh;
+            width: 80vw;
+            height: calc(80vw * 9 / 16);
             display: flex;
             margin: 0 auto;
             align-items: center;
@@ -58,22 +58,39 @@
     <div id="game"></div>
 
     <script>
+        // We start by getting references to various elements in our HTML page.
+        // The `game` element is the main game area where the rays will be drawn.
+        // The `minimap` element is a canvas where we will draw the minimap.
+        // The `ctx` variable is the 2D rendering context for the minimap canvas;
+        // we use this to draw shapes, test, etc. on the canvas. We create an
+        // empty array called `rays` to store the ray elements that will be created
+        // and added to the game area. The `numRays` variable determines how many
+        // rays will be cast in the game. The more rays, the higher the resolution.
+        // Too many rays will slow down the game though, so be careful!
         const game = document.getElementById('game');
         const minimap = document.getElementById('minimap');
         const ctx = minimap.getContext('2d');
         const rays = [];
-        const numRays = 56; //512;
+        const numRays = 128; // Probably don't want to exceed 512 rays
 
+        // We create the rays in the game area. We use a for loop along with our
+        // `numRays` variable to create the correct number of rays. This is quicker
+        // than creating all of the HTML elements manually.
         for (let i = 0; i < numRays; i++) {
+            // Create the div element, store it in a `div` variable
             const div = document.createElement('div');
+            // Add the CSS class `ray` to the element so it can be styled with CSS
             div.classList.add('ray');
+            // Append (add) the ray element to the game area container
             game.appendChild(div);
+            // Push the ray reference to the `rays` array so we can access it later
+            // when we are casting rays and updating the game view.
             rays.push(div);
         }
 
 
         const small_map = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 2, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
@@ -89,7 +106,7 @@
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
-            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 2, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1],
             [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
             [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
@@ -119,42 +136,124 @@
         const mapWidth = map[0].length;
 
         function castRays() {
+            // The following is a "for loop" (not a "for...in" or a "for...of").
+            // A for loop has 3 parts (or "expressions") within its parameters.
+            // The three expressions are as follows:
+            //      1. "initialization" - ran before the loop begins
+            //      2. "condition" - determines whether the loop should end
+            //      3. "afterthought" - ran after each loop iteration
+            //
+            // The three expressions of a for loop are separated by semicolons.
+            // In the for loop before, our "initialization" is the creation of
+            // a "i" variable, with the default value of 0. Our "condition" is
+            // the expression (i < numRays). As long as the value of "i" is
+            // less than the value of "numRays", the loop will continue. Lastly,
+            // our "afterthought" is the expression "i++", which is the same as
+            // writing "i = i + 1". It increments the value of "i" by 1 after
+            // each iteration of the loop.
+            //
+            // We declare the value of "numRays" at the top of this JavaScript
+            // code. The more rays, the higher the resolution of the raycasted
+            // scene.
             for (let i = 0; i < numRays; i++) {
+                // Each ray's angle is based on the player's angle, field of
+                // view, where the ray is relative to other rays (the first rays
+                // we encounter will be angled more to the left of the player's
+                // field of view, while later rays will be angled toward the
+                // right), etc.
                 const rayAngle = (player.angle - player.fov / 2) + (i / numRays) * player.fov;
 
+                // These represent the starting point of the ray, which is the player's
+                // position. The ray will be cast from this point in the direction
+                // of the rayAngle.
                 const rayX = Math.cos(rayAngle);
                 const rayY = Math.sin(rayAngle);
 
+                // We use mapX and mapY to track the player's position in the map grid.
+                // We use Math.floor() to round down the player's coordinates to the
+                // nearest whole number, which gives us the index of the cell in the map
+                // that the player is currently in. This is important for collision detection.
+                // The map is a 2D array, so we need to track both the X and Y coordinates.
                 let mapX = Math.floor(player.x);
                 let mapY = Math.floor(player.y);
 
+                // The deltaDistX and deltaDistY represent the distance between the player's
+                // position and the next vertical and horizontal grid lines, respectively.
+                // These values are used to determine how far the ray will travel in each
+                // direction before hitting a wall.
                 const deltaDistX = Math.abs(1 / rayX);
                 const deltaDistY = Math.abs(1 / rayY);
 
                 let sideDistX, sideDistY;
                 let stepX, stepY;
 
-                if (rayX < 0) { stepX = -1; sideDistX = (player.x - mapX) * deltaDistX; }
-                else { stepX = 1; sideDistX = (mapX + 1 - player.x) * deltaDistX; }
+                // Determine the step direction and initial side distance for the X-axis
+                if (rayX < 0) {
+                    stepX = -1; // Ray is moving left
+                    // Calculate the distance from the player's position to the next 
+                    // vertical grid line to the left. A vertical grid line represents the
+                    // boundary between two map cells along the X-axis.
+                    sideDistX = (player.x - mapX) * deltaDistX;
+                } else {
+                    stepX = 1; // Ray is moving right
+                    // Calculate distance to the next vertical grid line to the right.
+                    sideDistX = (mapX + 1 - player.x) * deltaDistX;
+                }
 
-                if (rayY < 0) { stepY = -1; sideDistY = (player.y - mapY) * deltaDistY; }
-                else { stepY = 1; sideDistY = (mapY + 1 - player.y) * deltaDistY; }
+                // Determine the step direction and initial side distance for the Y-axis
+                if (rayY < 0) {
+                    stepY = -1; // Ray is moving up
+                    // Calculate distance to the next horizontal grid line above.
+                    sideDistY = (player.y - mapY) * deltaDistY;
+                } else {
+                    stepY = 1; // Ray is moving down
+                    // Calculate distance to the next horizontal grid line below.
+                    sideDistY = (mapY + 1 - player.y) * deltaDistY;
+                }
 
+                // Initialize hit detection variables
+                // `hit` indicates whether the ray has hit a wall
+                // `hitVertical` indicates whether the hit was vertical or horizontal
                 let hit = false;
+                let hitPortal = false;
                 let hitVertical = false;
 
+                // This is a "while loop", which runs as long as the condition is true.
+                // The condition in this case is that the ray has not hit a wall. We use
+                // the `hit` variable; we read "!hit" as "not hit". So the loop will
+                // continue until the ray hits a wall.
                 while (!hit) {
+                    // Determine whether the ray will cross a vertical or horizontal grid
+                    // line next. Compare the distance to the next vertical (sideDistX)
+                    // and horizontal (sideDistY) grid lines.
                     if (sideDistX < sideDistY) {
-                        sideDistX += deltaDistX;
-                        mapX += stepX;
-                        hitVertical = true;
+                        // The ray will cross a vertical grid line first.
+                        sideDistX += deltaDistX;    // Move to the next vertical grid line.
+                        mapX += stepX;              // Step in the X direction.
+                        hitVertical = true;         // Mark that any hit will be vertical.
                     } else {
-                        sideDistY += deltaDistY;
-                        mapY += stepY;
-                        hitVertical = false;
+                        // The ray will cross a horizontal grid line first.
+                        sideDistY += deltaDistY;    // Move to the next horizontal grid line.
+                        mapY += stepY;              // Step in the Y direction.
+                        hitVertical = false;        // Mark that any hit will be horizontal.
                     }
 
-                    if (mapX < 0 || mapX >= mapWidth || mapY < 0 || mapY >= mapHeight || map[mapY][mapX] === 1) {
+                    // Did the ray hit a wall cell?
+                    // If the ray hit a wall, we set the `hit` variable to true.
+                    if (map[mapY][mapX] === 1) {
+                        hit = true;
+                    }
+
+                    if (map[mapY][mapX] === 2) {
+                        // If the ray hit a wall cell with value 2, we set the `hit` variable to true.
+                        hit = true;
+                        // We can also set the color of the ray to a different color for debugging.
+                        hitPortal = true;
+                    }
+
+                    // Did the ray hit the edge of the map itself?
+                    // If the ray hit the edge of the map, we set the `hit` variable to true.
+                    if (mapX < 0 || mapX >= mapWidth || mapY < 0 || mapY >= mapHeight) {
                         hit = true;
                     }
                 }
@@ -163,23 +262,57 @@
                     ? (sideDistX - deltaDistX)
                     : (sideDistY - deltaDistY);
 
-
-                // Closer walls are brighter; walls are darker the further away they are.
-                // We have a max brightness of 0.85 and a min brightness of 0.25. We assume a max distance of 10.
-                // The brightness is calculated as a function of the distance from the player to the wall.
+                // Closer walls are brighter. We have a max brightness of 0.85 and a min
+                // brightness of 0.25. We assume a max distance of 10. The brightness is
+                // calculated as a function of the distance from the player to the wall.
+                // We use Math.max() and Math.min() to clamp the brightness value between
+                // 0.25 and 0.85. When you pass multiple numbers to Math.max(), it returns
+                // the largest of those numbers. When you pass multiple numbers to Math.min(),
+                // it returns the smallest of those numbers.
                 const shading = Math.max(0.25, Math.min(0.85, 1 - (distance / 10)));
 
-                // Correct fish-eye effect
+                // Correct fish-eye effect. The fish-eye effect is a distortion caused by
+                // the angle of the ray relative to the player's view. When facing a flat
+                // wall, many rays on the left and right sides of the player's view will
+                // be longer than the rays in the center to reach the same wall. This is
+                // what causes the fish-eye effect. To correct this, we multiply the distance
+                // by the cosine of the angle between the ray and the player's view angle.
+                // ℹ️ If you want the fish-eye effect, comment-out the following line.
                 const correctedDistance = distance * Math.cos(rayAngle - player.angle);
 
+                // We store the distance and the angle as attributes on the element
+                // representing the ray. This is useful for debugging and visualization.
                 rays[i].dataset.angle = rayAngle;
                 rays[i].dataset.distance = distance;
+
+                // We set the height of the ray element based on the distance to the wall.
+                // The height is calculated as a percentage of the maximum height (100%).
+                // We use Math.min() to ensure the height does not exceed 100% in height.
                 rays[i].style.height = Math.min(100 / correctedDistance, 100) + "%";
 
-                const wallColor = hitVertical
-                    ? `rgb(${[139, 69, 19].map(x => x * shading).join(',')})`
-                    : `rgb(${[112, 128, 144].map(x => x * shading).join(', ')})`;
+                // To distinguish between vertical and horizontal walls, we set the color
+                // of the wall based on the hit type. We use an array with three numbers
+                // to represent our RGB color values. We multiply each color value by the
+                // shading value to create a darker color for further walls.
+                const vRGB = [139, 69, 19].map(color => color * shading);
+                const hRGB = [112, 128, 144].map(color => color * shading);
 
+                // We use the "ternary operator" here to determine which color to assign
+                // oo the `wallColor` variable. If the ray hit a vertical wall, we use the
+                // `vRGB` array. If the ray hit a horizontal wall, we use the `hRGB` array.
+                // The `join(',')` method converts the array into a string of
+                // comma-separated values. This is the format we need to use to set the
+                // color of the ray element. The `rgb()` function takes three
+                // comma-separated values (red, green, blue) to create a color.
+                let wallColor = `rgb(${(hitVertical ? vRGB : hRGB).join(',')})`;
+
+                if ( hitPortal ) {
+                    // If the ray hit a portal, we set the color to a different value.
+                    wallColor = 'rgba(255, 0, 0, 0.5)'; // Red with some transparency
+                }
+
+                // Using the "i" variable, we set the background of the current ray
+                // element to the color we just calculated
                 rays[i].style.background = wallColor;
             }
         }
@@ -281,7 +414,12 @@
         their mouse (i.e., their "pointer"). We use a feature of the browser
         called "pointer lock" to hide the mouse, and use it for input until
         the user presses the ESC key on their keyboard. */
-        game.addEventListener('click', game.requestPointerLock);
+        game.addEventListener('click', () =>
+            // We use the `unadjustedMovement` option to prevent the mouse from
+            // emitting exaggerated movement values when the mouse moves between
+            // multiple monitors. This is a known issue with the pointer lock API.
+            game.requestPointerLock({ unadjustedMovement: true })
+        );
 
         const sensitivity = 0.002; // Adjust for a more/less sensitive mouse
 
@@ -308,6 +446,12 @@
         as the handler for "mousemove" events. */
         function onMouseMove(event) {
             // Increase angle by product of mouse movement and sensitivity
+            // ⚠️ This code is buggy in a multiple-monitor setup; at some
+            // point the movementX values will be exagerated, causing the
+            // player to spin out of control. We can mitigate this via the
+            // `unadjustedMovement` option in the requestPointerLock call.
+            // This has the unfortunate side-effect of no longer receiving
+            // mouse input when the mouse moves to another monitor.
             player.angle += event.movementX * sensitivity;
 
             // Let's keep our angle between 0 and 2π for reliable math, etc.
@@ -350,9 +494,9 @@
             const y = Math.floor(event.offsetY / cellSize);
 
             // We don't permit modifications to the first or last rows
-            if ( x > 0 && x < mapWidth - 1 ) {
+            if (x > 0 && x < mapWidth - 1) {
                 // Nor do we permit modifications to the top or bottom rows
-                if ( y > 0 && y < mapHeight - 1 ) {
+                if (y > 0 && y < mapHeight - 1) {
                     // We'll retrieve and store the current value of the index
                     const currentValue = map[y][x];
                     // Assign a new value based on the currentValue
