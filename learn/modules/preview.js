@@ -2,7 +2,7 @@ import dom from "./dom.js";
 import scenarios from "./scenarios.js";
 
 export function updatePreview() {
-  dom.setPreviewFrameSourceHTML(buildDoc(scenarios.getCurrentScenario()));
+  dom.setPreviewFrameSourceHTML(buildDoc(scenarios.getCurrent()));
 }
 
 /**

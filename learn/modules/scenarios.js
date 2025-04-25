@@ -1,7 +1,7 @@
 import dom from "./dom.js";
 import editor from "./editor.js";
 import { updatePreview } from "./preview.js";
-import { execUserJS } from "./runner.js";
+import runner from "./runner.js";
 
 export let currentIndex = 0;
 export let currentScenarioFile = "";
@@ -33,7 +33,7 @@ function setCurrentScenario(scenarioIndex) {
   currentIndex = scenarioIndex;
 }
 
-function getCurrentScenario() {
+function getCurrent() {
   return scenarios[currentIndex];
 }
 
@@ -54,11 +54,11 @@ function loadNext() {
 }
 
 function setCurrentScenarioFileContent(content) {
-  getCurrentScenario().files[currentScenarioFile] = content;
+  getCurrent().files[currentScenarioFile] = content;
 }
 
 function getCurrentScenarioFileContent() {
-  return getCurrentScenario().files[currentFile];
+  return getCurrent().files[currentFile];
 }
 
 export function loadScenario(index = 0) {
@@ -81,7 +81,7 @@ export function loadScenario(index = 0) {
     scenario.defaultFile ?? Object.keys(scenario.files)[0]
   );
 
-  hasHtml ? updatePreview() : execUserJS();
+  hasHtml ? updatePreview() : runner.execUserJS();
 }
 
 function populateFileSelectorFromScenario(scenario) {
@@ -96,7 +96,7 @@ export default {
   getAll,
   setInitialScenario,
   setCurrentScenario,
-  getCurrentScenario,
+  getCurrent,
   setCurrentScenarioFile,
   getCurrentScenarioFile,
   getCurrentScenarioFileContent,

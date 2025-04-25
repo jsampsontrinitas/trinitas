@@ -1,5 +1,5 @@
 import editor from "./editor.js";
-import { runTests } from "./runner.js";
+import runner from "./runner.js";
 import scenarios from "./scenarios.js";
 
 const scenarioSelector = document.getElementById("scenarioSel");
@@ -109,7 +109,7 @@ function setupEventListeners() {
   previousScenarioButton.addEventListener("click", scenarios.loadPrevious);
 
   btnFormatCode.addEventListener("click", editor.formatCurrentFile);
-  btnRunTests.addEventListener("click", runTests);
+  btnRunTests.addEventListener("click", () => runner.runTests());
 
   btnShowTests.addEventListener("click", () => {
     previewContainer.classList.add("hidden");

@@ -1,6 +1,6 @@
 import { debounce, modeFor, logLine } from "./utils.js";
 import { analyze } from "./analyzer.js";
-import { execUserJS } from "./runner.js";
+import runner from "./runner.js";
 import { updatePreview } from "./preview.js";
 import scenarios from "./scenarios.js";
 import dom from "./dom.js";
@@ -62,7 +62,7 @@ async function formatCurrentFile() {
 
 function setCurrentScenarioFile(scenarioFileName) {
   scenarios.setCurrentScenarioFile(scenarioFileName);
-  const scenario = scenarios.getCurrentScenario();
+  const scenario = scenarios.getCurrent();
   codeMirror.setOption("mode", modeFor(scenarioFileName));
   codeMirror.setValue(scenario.files[scenarioFileName]);
   dom.UI.setSelectedScenarioFileByValue(scenarioFileName);
@@ -79,10 +79,10 @@ function onEdit() {
   // file-selection changes
   scenarios.setCurrentScenarioFileContent(codeMirror.getValue());
   analyze();
-  if (scenarios.getCurrentScenario().files.hasOwnProperty("index.html")) {
+  if (scenarios.getCurrent().files.hasOwnProperty("index.html")) {
     updatePreview();
   } else {
-    execUserJS();
+    runner.execUserJS();
   }
 }
 
