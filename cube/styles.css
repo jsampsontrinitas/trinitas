@@ -1,0 +1,293 @@
+/* 
+ * CSS CONCEPTS COVERED IN THIS FILE
+ * --------------------------------
+ * 
+ * CSS FEATURES:
+ * - Media Queries: Detection of user preferences (prefers-color-scheme)
+ * - CSS Custom Properties (Variables): For reusable values and calculations
+ * - Nested Selectors: Parent-child relationship definitions in a cleaner syntax
+ * - Flexbox Layout: For centering and organizing content
+ * - CSS Transitions: For smooth property changes over time
+ * - CSS Animations: Using @keyframes for continuous movement
+ * - 3D Transforms: Including rotate3d, rotatex, rotatey, translatez
+ * - Pseudo-elements: Using ::after to add content
+ * - Pseudo-classes: Using :not() for conditional styling
+ * - CSS Box Model: With border, padding, margin, and box-sizing
+ * - CSS Functions: calc(), rgba(), linear-gradient(), var()
+ * - CSS Selectors: Class selectors, ID selectors, descendant selectors
+ * 
+ * GENERAL PRINCIPLES/IDEAS:
+ * - 3D Space Representation: Creating a 3D cube with CSS
+ * - Dark Mode Support: Adapting UI based on user system preferences
+ * - Responsive Design Concepts: Using viewport units (vh)
+ * - Interactive Elements: Using cursor styles to indicate functionality
+ * - Visual Hierarchy: Using opacity, color, and positioning
+ * - Animation Principles: Timing functions, duration, repetition
+ * - Reusability: Through custom properties and shared styles
+ * - Accessibility Considerations: Proper contrast and visual indicators
+ * - CSS Architecture: Organizing styles with nested selectors
+ * - Progressive Enhancement: Adding animations as supplementary features
+ */
+
+/* The following is a "Media Query", which checks to see
+   if the user's device indicates the user would prefer a
+   dark-mode theme for the page. If the user's device has
+   indicated the user prefers a dark mode theme, the CSS
+   in the "block" (defined by the { and } delimiters) is
+   processed and applied as appropriate. */
+   @media (prefers-color-scheme: dark) {
+    /* We start with a simple "body" selector, meaning we
+       are targetting the <BODY> element in our HTML.
+       Our style declaration block (i.e., everything within
+       the { and } following the selector) sets two
+       properties (color and background). */
+    body {
+      color: #ccc;
+      background: #222;
+      /* We have another selector within the "body" selector.
+         This is what's known as a "nested selector". It lets
+         us build upon the "parent selector". So a selector
+         of "#options" (targetting an element with an [ID]
+         attribute of "options") is effectively the same as
+         writing "body #options" as a NON-NESTED selector.
+         Nesting the selector in this case helps to avoid
+         the potential for needing to write long, complex
+         selectors. */
+      #options {
+        span {
+          color: rgba(255, 255, 255, 0.5) !important;
+        }
+      }
+    }
+  }
+  
+  /* The ".pulsate" class applies an animation named "pulsate" to any element
+     that has this class. The animation runs for 1 second, uses an ease-in-out
+     timing function (starts slow, speeds up in the middle, then slows down at the end),
+     and repeats infinitely (the element will pulsate forever). The actual animation
+     keyframes are defined at the bottom of this file. */
+  .pulsate {
+      animation: pulsate 1s ease-in-out infinite;
+  }
+  
+  /* The ".spin" class applies an animation named "spin" to any element with this class.
+     This animation runs for 10 seconds, also uses an ease-in-out timing function,
+     and repeats infinitely. The keyframes defined at the bottom of the file show
+     that this creates a 3D rotation effect. */
+  .spin {
+    animation: spin 10s ease-in-out infinite;
+  }
+  
+  /* This selector uses the ":not()" pseudo-class to target any element with class "box"
+     that does NOT also have the class "labels". Within those elements, it selects any
+     element with class "face" and targets the "::after" pseudo-element.
+     The "::after" pseudo-element (defined later in this file) contains the label text
+     for each face of the box. This rule sets the opacity to 0, effectively hiding
+     the labels on the box faces when the "labels" class is not present. */
+  .box:not(.labels) .face::after {
+    opacity: 0;
+  }
+  
+  
+  /* Here we target the <BODY> element and set up the basic page layout.
+     We're using flexbox for layout, with a column direction (elements stack
+     vertically), and setting the height to 100% of the viewport height.
+     The overflow is hidden to prevent scrollbars, and we're using a sans-serif
+     font for all text. */
+  body {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    font-family: sans-serif;
+  
+    /* This is another nested selector targeting an element with ID "options".
+       The flexbox display with justify-content: center ensures that the options
+       are centered horizontally on the page. */
+    #options {
+      display: flex;
+      justify-content: center;
+  
+      /* The span elements within the options area have a "help" cursor (question mark),
+         and a semi-transparent black color. These are likely informational elements
+         that provide help or tooltips. */
+      span {
+        cursor: help;
+        color: rgba(0, 0, 0, 0.5);
+      }
+  
+      /* This selector targets both label and span elements within the options area.
+         They're styled as pill-shaped buttons with light borders, padding, rounded corners,
+         and margins between them. The "display: flex" allows for proper alignment of
+         content within these elements. */
+      label,
+      span {
+        border: 1px solid #ebebeb;
+        padding: 0.5em 1em;
+        border-radius: 10px;
+        margin-right: 1em;
+        display: flex;
+        box-sizing: border-box;
+        /* Input elements (like checkboxes) within these labels have a left margin
+           to provide spacing between the label text and the input. */
+        input {
+          margin-left: 1em;
+        }
+      }
+    }
+  
+    /* The ".box-container" is a wrapper for our 3D box. It takes up all available
+       vertical space (flex: 1), and uses flexbox to center its content both
+       horizontally and vertically within the page. */
+    .box-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+  
+  /* This section defines the ".box" class, which creates our 3D cube.
+     We're using CSS Custom Properties (variables) for the size, which makes
+     it easy to adjust the dimensions of the cube from one place. */
+  .box {
+    /* Define the size of the box and calculate half-size for later use.
+       Using CSS variables allows for easy adjustment of the box dimensions
+       from a single location. */
+    --size: 200px;
+    --half-size: calc(var(--size) / 2);
+  
+    width: var(--size);
+    height: var(--size);
+  
+    /* The transition property creates smooth animations when the transform
+       or perspective properties change. The transform-style: preserve-3d
+       ensures that child elements maintain their 3D positioning.
+       The initial rotation gives the box a 3D perspective. */
+    transition:
+      transform 2s,
+      perspective 2s;
+    transform-style: preserve-3d;
+    transform: rotatex(45deg) rotatey(45deg);
+  
+    /* Each face of the box is styled here. They all share common properties,
+       but have unique positioning and colors defined below. */
+    .face {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      opacity: 0.85;
+      backface-visibility: visible;
+      background-color: var(--face-color);
+      /* This creates a diagonal gradient overlay on each face, adding depth
+         and dimensionality to the appearance. */
+      background-image: linear-gradient(
+        -45deg,
+        rgba(0, 0, 0, 0.5),
+        rgba(255, 255, 255, 0.5)
+      );
+      transform-origin: center center;
+      transition: all 2s;
+  
+      /* Centering the content (labels) on each face. */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  
+      /* The "::after" pseudo-element is used to add text labels to each face.
+         The content is defined by the --letter custom property, which is set
+         individually for each face below. The transition allows for smooth
+         fading of the labels when they're toggled on/off. */
+      &::after {
+        content: var(--letter, "A");
+        transition: opacity 1s;
+        font-size: calc(0.18 * var(--size));
+      }
+  
+      /* Each of the following blocks defines the specific properties for one face
+         of the cube. Each face has:
+         1. A unique label (--letter)
+         2. A unique color (--face-color)
+         3. A unique 3D transform to position it correctly in 3D space */
+         
+      /* The top face rotates 90 degrees around the X-axis and is positioned
+         at half the box size away from the origin along the Z-axis. */
+      &.top {
+        --letter: "TOP";
+        --face-color: #ff6b6b;
+        transform: rotatex(90deg) translatez(var(--half-size));
+      }
+  
+      /* The front face is simply translated forward along the Z-axis
+         by half the box size, placing it at the front of the cube. */
+      &.front {
+        --letter: "FRONT";
+        --face-color: #ffd93d;
+        transform: translatez(var(--half-size));
+      }
+  
+      /* The back face is translated backward along the Z-axis.
+         The "::after" content is rotated 180 degrees to make the text
+         readable when viewing the back face. */
+      &.back {
+        --letter: "BACK";
+        --face-color: #6bcb77;
+        transform: translatez(calc(var(--half-size) * -1));
+        &::after {
+          transform: rotatey(180deg);
+        }
+      }
+  
+      /* The left face rotates -90 degrees around the Y-axis and is positioned
+         half the box size away from the origin along the Z-axis. */
+      &.left {
+        --letter: "LEFT";
+        --face-color: #4d96ff;
+        transform: rotatey(-90deg) translatez(var(--half-size));
+      }
+  
+      /* The right face rotates 90 degrees around the Y-axis and is positioned
+         half the box size away from the origin along the Z-axis. */
+      &.right {
+        --letter: "RIGHT";
+        --face-color: #845ec2;
+        transform: rotatey(90deg) translatez(var(--half-size));
+      }
+  
+      /* The bottom face rotates -90 degrees around the X-axis and is positioned
+         half the box size away from the origin along the Z-axis. */
+      &.bottom {
+        --letter: "BOTTOM";
+        --face-color: #ff9671;
+        transform: rotatex(-90deg) translatez(var(--half-size));
+      }
+    }
+  }
+  
+  /* This defines the keyframes for the "spin" animation used by the ".spin" class.
+     The animation rotates an element in 3D space, starting and ending at 0 degrees,
+     and rotating to 360 degrees at the halfway point. The rotation occurs around
+     a vector defined by (1, 1.2, 0), creating a somewhat diagonal rotation axis. */
+  @keyframes spin {
+    0%,
+    100% {
+      transform: rotate3d(1, 1.2, 0, 0deg);
+    }
+    50% {
+      transform: rotate3d(1, 1.2, 0, 360deg);
+    }
+  }
+  
+  /* This defines the keyframes for the "pulsate" animation used by the ".pulsate" class.
+     The animation creates a subtle size pulsing effect, scaling the element up to 1.03 times
+     its original size at the halfway point, and returning to normal size at the start and end. */
+  @keyframes pulsate {
+    0%,
+    100% {
+      scale: 1;
+    }
+    50% {
+      scale: 1.03;
+    }
+  }

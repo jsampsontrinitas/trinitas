@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <!-- We use the [defer] attribute to delay script execution until AFTER
+         the document has been fully parsed, processed, and loaded.
+         Otherwise, our JavaScript may attempt to look up elements that have
+         not yet been created. -->
+    <script src="scripts.js" defer></script>
+    <title>Epic Spinning Cube</title>
+</head>
+<body>
+<!--
+  HTML CONCEPTS COVERED IN THIS FILE
+  ---------------------------------
+  
+  HTML FEATURES:
+  - Semantic Structure: Using appropriate div elements for content organization
+  - Form Controls: Checkboxes for toggling functionality
+  - Input Labels: Associating labels with their corresponding inputs
+  - ID Attributes: Providing unique identifiers for JavaScript interaction
+  - Class Attributes: Applying CSS styles and enabling JavaScript selection
+  - Element Nesting: Creating parent-child relationships for structure
+  - Informational Elements: Using span for help text
+  - Component Structure: Creating a complex 3D cube from multiple elements
+  
+  GENERAL PRINCIPLES/IDEAS:
+  - User Interface Design: Creating intuitive controls for interaction
+  - Separation of Concerns: Structure (HTML), presentation (CSS), behavior (JS)
+  - Progressive Enhancement: Base functionality with optional features
+  - Accessibility Considerations: Proper label associations for form controls
+  - Component-Based Architecture: Building complex UI from simple components
+  - Interactive Elements: Creating elements that respond to user actions
+  - Visual Feedback: Providing information about available interactions
+  - 3D Representation: Using 2D elements to create a 3D visual experience
+  - Mental Model Mapping: UI controls directly correspond to visual effects
+-->
+
+<!-- The options div contains the user interface controls for the 3D cube.
+     It has three checkbox controls that toggle different visual effects and
+     a help text that informs users they can click cube faces to change transparency. -->
+     <div id="options">
+        <!-- The "Pulsate" checkbox toggles the pulsate animation.
+             When checked, the cube will grow and shrink in a breathing effect.
+             The "for" attribute is implied by nesting the input inside the label. -->
+        <label>Pulsate <input type="checkbox" id="pulsate" /></label>
+      
+        <!-- The "Spin" checkbox toggles the spin animation.
+             When checked, the cube will rotate in 3D space.
+             The ID "spin" allows JavaScript to identify this control and apply the corresponding class. -->
+        <label>Spin <input type="checkbox" id="spin" /></label>
+      
+        <!-- The "Labels" checkbox toggles the visibility of text labels on each face of the cube.
+             The JavaScript uses this ID to toggle a class on the cube element. -->
+        <label>Labels <input type="checkbox" id="labels" /></label>
+      
+        <!-- This informational span provides a hint about additional interaction capabilities.
+             The CSS styles this with a help cursor to indicate it contains helpful information. -->
+        <span>Click cube faces to toggle transparency</span>
+      </div>
+      
+      <!-- The box-container div serves as a wrapper for the 3D cube.
+           It's styled with flexbox to center the cube within the available space. -->
+      <div class="box-container">
+        <!-- The box div is the main container for our 3D cube.
+             It has CSS properties that set its size and initial 3D transformation.
+             JavaScript can add classes to this element to trigger animations. -->
+        <div class="box">
+          <!-- Each of the following divs represents one face of the 3D cube.
+               They are positioned in 3D space using CSS transforms.
+               The class names indicate their position (top, front, back, etc.).
+               Each face has a different color applied via CSS.
+               The ::after pseudo-element in CSS is used to add the text labels.
+               Clicking on these faces will toggle their transparency via JavaScript. -->
+          <div class="face top"></div>
+          <div class="face front"></div>
+          <div class="face back"></div>
+          <div class="face left"></div>
+          <div class="face right"></div>
+          <div class="face bottom"></div>
+        </div>
+      </div>
+      
+</body>
+</html>
