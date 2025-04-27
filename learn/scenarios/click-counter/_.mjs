@@ -5,6 +5,12 @@ export default {
   defaultFile: "index.html",
   tests: [
     {
+      desc: "#btn and #count both exist",
+      fn: `return ['#btn', '#count'].every((selector) => {
+        return document.querySelector(selector) !== null;  
+      })`,
+    },
+    {
       desc: "increments after click",
       fn: `
           const btn = document.getElementById('btn');

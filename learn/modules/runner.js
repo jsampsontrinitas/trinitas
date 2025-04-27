@@ -6,10 +6,12 @@ import preview from "./preview.js";
 let testFrame;
 
 function testFrameExists() {
+  console.debug(`testFrameExists`);
   return testFrame?.isConnected;
 }
 
 function createTestFrame() {
+  console.debug(`createTestFrame`);
   // Remove any existing iframe
   if (testFrameExists()) {
     testFrame.remove();
@@ -24,6 +26,7 @@ function createTestFrame() {
 }
 
 function destroyTestFrame() {
+  console.debug(`destroyTestFrame`);
   if (testFrameExists()) {
     testFrame.remove();
   }
@@ -32,19 +35,17 @@ function destroyTestFrame() {
 }
 
 function setTestFrameSrcDoc(html) {
+  console.debug(`setTestFrameSrcDoc`, html);
   // Make sure our testing frame exists
   if (!testFrameExists()) {
     createTestFrame();
   }
 
-  // TODO: We need to inject into the iframe our
-  // "capture console" logic so that we can capture console
-  // messages from the tests.
-
   testFrame.srcdoc = html;
 }
 
 export function execUserJS() {
+  console.debug(`execUserJS`);
   const userCodeAsString = gatherJS(scenarios.getCurrent());
   // We call captureConsole here just incase the user's
   // code contains console method calls. We have our own
@@ -110,6 +111,7 @@ export function captureConsole(userCodeRunner) {
  * @param {MessageEvent} event - The message event containing console data from the iframe.
  */
 function onCapturedConsoleMessage(event) {
+  console.debug(`onCapturedConsoleMessage`);
   if (event.data?.type === "console") {
     const { kind, args } = event.data;
     logLine(`${kind}: ${args.join(" ")}`);
@@ -117,55 +119,76 @@ function onCapturedConsoleMessage(event) {
 }
 
 function createCapturedConsoleListener() {
+  console.debug(`createCapturedConsoleListener`);
   window.addEventListener("message", onCapturedConsoleMessage);
 }
 
 function destroyCapturedConsoleListener() {
+  console.debug(`destroyCapturedConsoleListener`);
   window.removeEventListener("message", onCapturedConsoleMessage);
 }
 
 export function runTests(scenario = scenarios.getCurrent()) {
-  onTestFrameLoadEvent(() => {
+  console.debug(`runTests`);
+  
+  const frame = createTestFrame();
+
+  frame.srcdoc = preview.buildDoc(scenario);
+
+  console.log(frame.srcdoc);
+
+  setTimeout(() => {
+    console.debug(`onTestFrameLoadEvent callback`);
     const results = runTestsInFrame(scenario);
     displayTestResults(results);
     destroyTestFrame();
-  });
+  }, 1000);
 
-  setTestFrameSrcDoc(preview.buildDoc(scenario));
 }
 
 function onTestFrameLoadEvent(callback) {
+  console.debug(`onTestFrameLoadEvent`);
   const iframe = createTestFrame();
   iframe.addEventListener("load", callback, { once: true });
 }
 
 function runTestsInFrame(scenario) {
+  console.debug(`runTestsInFrame`);
+  if ( !testFrameExists() ) {
+    throw new Error ("No test frame exists");
+  }
   const results = [];
-  const iframe = createTestFrame();
+  const iframe = testFrame;
   const contentWindow = iframe.contentWindow;
 
   for (const test of scenario.tests) {
     let pass = false;
     const desc = test.desc;
     const source = `(()=>{${test.fn}})()`;
+    console.log(`Testing: ${source}`);
     try {
       pass = contentWindow.eval(source);
-    } catch {}
-    results.push({ desc, pass });
+      console.log(`Successful execution: `, pass);
+    } catch (e) {
+      console.log(`Unsuccessful execution`, e);
+    }
+    results.push({ desc, pass, source });
   }
 
   return results;
 }
 
 function displayTestResults(results) {
-  const container = dom.UI.CONTAINERS.testsContainer;
+  console.debug(`displayTestResults`);
+  const container = dom.UI.containers.testsContainer;
   const fragment = document.createDocumentFragment();
 
   for (const result of results) {
     const element = document.createElement("div");
     const className = result.pass ? "pass" : "fail";
-    const description = (result.pass ? "✔" : "✖") + result.desc;
+    const description = (result.pass ? "✔" : "✖") + " " + result.desc;
 
+    element.title = result.source;
     element.classList.add(className);
     element.textContent = description;
     fragment.appendChild(element);

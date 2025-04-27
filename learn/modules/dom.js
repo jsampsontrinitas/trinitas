@@ -9,6 +9,7 @@ const statsContainer = document.getElementById("statsContainer");
 const previousScenarioButton = document.getElementById("prevBtn");
 const nextScenarioButton = document.getElementById("nextBtn");
 
+const instructionsPane = document.getElementById("instructionsPane");
 const instructionsContainer = document.getElementById("instructions");
 const consoleContainer = document.getElementById("consoleOut");
 const testsContainer = document.getElementById("testsOut");
@@ -23,6 +24,7 @@ const btnFormatCode = document.getElementById("formatBtn");
 const btnBrowserOutput = document.getElementById("previewTabBtn");
 const btnShowTests = document.getElementById("testsTabBtn");
 const btnRunTests = document.getElementById("runBtn");
+const btnToggleInstructions = document.getElementById("toggleInstructions");
 
 function setPreviewFrameSourceHTML(html) {
   previewFrame.srcdoc = html;
@@ -33,12 +35,18 @@ const buttons = {
   btnBrowserOutput,
   btnShowTests,
   btnRunTests,
+  btnToggleInstructions,
 };
 
 const containers = {
   consoleContainer,
   instructionsContainer,
   testsContainer,
+};
+
+const dropdowns = {
+  scenarioSelector,
+  scenarioFileSelector,
 };
 
 function init() {
@@ -53,10 +61,20 @@ function setupDOM() {
   }
 }
 
-function setButtonDisabled(button, disabled) {
-  if (Object.values(buttons).includes(button)) {
-    button.disabled = disabled;
+function clickButton(button) {
+  if ( Object.values(buttons).includes(button) ) {
+    button.click();
   }
+}
+
+function setButtonEnabled(button, enabled) {
+  if ( Object.values(buttons).includes(button) ) {
+    button.disabled = !enabled;
+  }
+}
+
+function setBrowserOutputButtonEnabled (enabled) {
+  btnBrowserOutput.disabled = !enabled;
 }
 
 function setInstructions(html) {
@@ -69,6 +87,10 @@ function setSelectedScenarioIndex(index) {
 
 function addScenarioFilesOption(text, value) {
   scenarioFileSelector.add(new Option(text, value));
+}
+
+function getScenarioFileSelectorOptions () {
+  return Array.from(scenarioFileSelector.options);
 }
 
 function clearScenarioFileSelectorOptions() {
@@ -122,6 +144,12 @@ function setupEventListeners() {
     testsContainer.classList.add("hidden");
     paneTitle.textContent = "Browser Output";
   });
+
+  btnToggleInstructions.addEventListener("click", () => {
+    const { display } = getComputedStyle(instructionsPane);
+    instructionsPane.style.display = ( display == "none" ? "" : "none" );
+  });
+
 }
 
 export function updateStatsContainer(stats) {
@@ -149,14 +177,17 @@ export default {
   init,
   setPreviewFrameSourceHTML,
   UI: {
+    buttons,
+    containers,
+    setButtonEnabled,
+    clickButton,
     setInstructions,
     setSelectedScenarioIndex,
     setSelectedScenarioFileByValue,
+    getScenarioFileSelectorOptions,
     clearScenarioFileSelectorOptions,
     addScenarioFilesOption,
-    setButtonDisabled,
+    setBrowserOutputButtonEnabled,
     clearConsole,
-    BUTTONS: buttons,
-    CONTAINERS: containers,
   },
 };

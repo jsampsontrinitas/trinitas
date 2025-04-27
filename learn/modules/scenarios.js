@@ -71,10 +71,10 @@ export function loadScenario(index = 0) {
 
   const hasHtml = scenario.files.hasOwnProperty("index.html");
 
-  dom.UI.setButtonDisabled(dom.UI.BUTTONS.btnBrowserOutput, !hasHtml);
+  dom.UI.setButtonEnabled(dom.UI.buttons.btnBrowserOutput, hasHtml);
 
   if (!hasHtml) {
-    dom.UI.BUTTONS.btnShowTests.click();
+    dom.UI.clickButton(dom.UI.buttons.btnShowTests);
   }
 
   editor.setCurrentScenarioFile(
@@ -85,7 +85,11 @@ export function loadScenario(index = 0) {
 }
 
 function populateFileSelectorFromScenario(scenario) {
-  dom.UI.clearScenarioFileSelectorOptions();
+  if (dom.UI.getScenarioFileSelectorOptions().length > 0) {
+    // Clear scenario files from previous scenario
+    dom.UI.clearScenarioFileSelectorOptions();
+  }
+
   Object.keys(scenario.files).forEach((filename) => {
     dom.UI.addScenarioFilesOption(filename, filename);
   });

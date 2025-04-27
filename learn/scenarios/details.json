@@ -26,6 +26,10 @@
     "defaultFile": "index.html",
     "tests": [
       {
+        "desc": "#btn and #count both exist",
+        "fn": "return ['#btn', '#count'].every((selector) => {\n        return document.querySelector(selector) !== null;  \n      })"
+      },
+      {
         "desc": "increments after click",
         "fn": "\n          const btn = document.getElementById('btn');\n          const span = document.getElementById('count');\n          btn.click();  // 1\n          btn.click();  // 2\n          return span.textContent === \"2\";\n        "
       }

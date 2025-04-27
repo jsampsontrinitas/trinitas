@@ -17,7 +17,7 @@ export function modeFor(filename) {
 }
 
 export function logLine(text) {
-  const container = dom.UI.CONTAINERS.consoleContainer;
+  const container = dom.UI.containers.consoleContainer;
   const mostRecentEntry = container.firstElementChild;
 
   const newEntry = createElementWithAttributes("div", {
@@ -53,7 +53,7 @@ export function gatherJS(scenario) {
  * @returns {HTMLElement} The newly created DOM element with the specified attributes.
  */
 export function createElementWithAttributes(tagname, attributes = {}) {
-  const element = document.createElement("tagname");
+  const element = document.createElement(tagname);
 
   for (const [key, value] of Object.entries(attributes)) {
     element.setAttribute(key, value);
