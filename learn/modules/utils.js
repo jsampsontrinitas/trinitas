@@ -24,7 +24,9 @@ export function logLine(text) {
     style: "white-space: pre"
   });
 
-  newEntry.textContent = text;
+  const timeString = new Date().toLocaleTimeString("en-US");
+
+  newEntry.textContent = `[${timeString}] ${text}`;
 
   if (mostRecentEntry) {
     container.insertBefore(newEntry, mostRecentEntry);

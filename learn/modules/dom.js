@@ -1,30 +1,32 @@
 import editor from "./editor.js";
 import runner from "./runner.js";
-import scenarios from "./scenarios.js";
+import scenarios, { loadScenario } from "./scenarios.js";
 
-const scenarioSelector = document.getElementById("scenarioSel");
+// const scenarioSelector = document.getElementById("scenarioSel");
 const scenarioFileSelector = document.getElementById("fileSel");
 
 const statsContainer = document.getElementById("statsContainer");
 const previousScenarioButton = document.getElementById("prevBtn");
 const nextScenarioButton = document.getElementById("nextBtn");
 
-const instructionsPane = document.getElementById("instructionsPane");
+const instructionsPanel = document.getElementById("instructionsPanel");
 const instructionsContainer = document.getElementById("instructions");
 const consoleContainer = document.getElementById("consoleOut");
-const testsContainer = document.getElementById("testsOut");
+const testsContainer = document.getElementById("testsList");
 
-const previewContainer = document.getElementById("previewWrap");
+const previewContainer = document.getElementById("previewWrapper");
 const previewFrame = document.getElementById("previewFrame");
 
 // Switches beteen "Tests" and "Browser Output" labels
-const paneTitle = document.getElementById("paneTitle");
+const paneTitle = {}; // document.getElementById("paneTitle");
 
 const btnFormatCode = document.getElementById("formatBtn");
 const btnBrowserOutput = document.getElementById("previewTabBtn");
 const btnShowTests = document.getElementById("testsTabBtn");
 const btnRunTests = document.getElementById("runBtn");
 const btnToggleInstructions = document.getElementById("toggleInstructions");
+
+const scenarioSelector = document.getElementById("scenarioSelector");
 
 function setPreviewFrameSourceHTML(html) {
   previewFrame.srcdoc = html;
@@ -146,8 +148,8 @@ function setupEventListeners() {
   });
 
   btnToggleInstructions.addEventListener("click", () => {
-    const { display } = getComputedStyle(instructionsPane);
-    instructionsPane.style.display = ( display == "none" ? "" : "none" );
+    const { display } = getComputedStyle(instructionsPanel);
+    instructionsPanel.style.display = ( display == "none" ? "" : "none" );
   });
 
 }
@@ -163,6 +165,7 @@ export function updateStatsContainer(stats) {
     if (stats.hasOwnProperty(key) && stats[key] !== value) {
       // Set the new value and add a value-changed effect with CSS
       child.textContent = stats[key];
+      child.dataset.value = stats[key];
       child.classList.add("changed");
       child.addEventListener(
         "animationend",
@@ -171,6 +174,14 @@ export function updateStatsContainer(stats) {
       );
     }
   }
+}
+
+function hideStatsContainer() {
+  statsContainer.hidden = true;
+}
+
+function showStatsContainer() {
+  statsContainer.hidden = false;
 }
 
 export default {
@@ -188,6 +199,9 @@ export default {
     clearScenarioFileSelectorOptions,
     addScenarioFilesOption,
     setBrowserOutputButtonEnabled,
+    hideStatsContainer,
+    showStatsContainer,
+    updateStatsContainer,
     clearConsole,
   },
 };

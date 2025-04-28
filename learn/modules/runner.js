@@ -72,7 +72,7 @@ export function captureConsole(userCodeRunner) {
   // A place to store original console method implementations
   const original = {};
   const replacer = (kind) => {
-    return (...args) => {
+    return function (...args) {
       // Uncomment to invoke original implementation
       // original[kind](...args);
 
@@ -83,6 +83,9 @@ export function captureConsole(userCodeRunner) {
       }
 
       // When executing in the main window, use direct calls
+      args = args.map((arg) =>
+        typeof arg === "undefined" ? "undefined" : arg
+      );
       logLine(`${kind}: ${args.join(" ")}`);
     };
   };
@@ -112,6 +115,13 @@ export function captureConsole(userCodeRunner) {
  */
 function onCapturedConsoleMessage(event) {
   console.debug(`onCapturedConsoleMessage`);
+  // Was this our testing iframe?
+  if ( event.source !== testFrame?.contentWindow) {
+    // Or maybe it was our preview iframe?
+    if (event.source !== dom.UI.getPreviewFrame().contentWindow) {
+      return;
+    }
+  }
   if (event.data?.type === "console") {
     const { kind, args } = event.data;
     logLine(`${kind}: ${args.join(" ")}`);
@@ -130,7 +140,7 @@ function destroyCapturedConsoleListener() {
 
 export function runTests(scenario = scenarios.getCurrent()) {
   console.debug(`runTests`);
-  
+
   const frame = createTestFrame();
 
   frame.srcdoc = preview.buildDoc(scenario);
@@ -143,19 +153,12 @@ export function runTests(scenario = scenarios.getCurrent()) {
     displayTestResults(results);
     destroyTestFrame();
   }, 1000);
-
-}
-
-function onTestFrameLoadEvent(callback) {
-  console.debug(`onTestFrameLoadEvent`);
-  const iframe = createTestFrame();
-  iframe.addEventListener("load", callback, { once: true });
 }
 
 function runTestsInFrame(scenario) {
   console.debug(`runTestsInFrame`);
-  if ( !testFrameExists() ) {
-    throw new Error ("No test frame exists");
+  if (!testFrameExists()) {
+    throw new Error("No test frame exists");
   }
   const results = [];
   const iframe = testFrame;
@@ -203,4 +206,8 @@ function displayTestResults(results) {
   container.append(fragment);
 }
 
-export default { execUserJS, runTests };
+export default {
+  execUserJS,
+  runTests,
+  createCapturedConsoleListener,
+};

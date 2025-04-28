@@ -4,6 +4,12 @@
 <head>
     <meta charset="UTF-8" />
     <title>JS/DOM Teaching Tool</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+        crossorigin="anonymous"></script>
     <!-- CodeMirror 5 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.17/lib/codemirror.min.css">
     <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.17/lib/codemirror.min.js"></script>
@@ -21,65 +27,167 @@
     <script src="https://cdn.jsdelivr.net/npm/prettier@3.5.3/plugins/postcss.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prettier@3.5.3/standalone.min.js"></script>
     <!-- Our files -->
-    <link rel="stylesheet" href="index.css">
+    <link rel="xstylesheet" href="index.css">
     <script type="module" src="index.js" defer></script>
+    <style>
+        body {
+            height: 100vh;
+        }
+    </style>
 </head>
 
-<body>
-    <header>
-        <label>Scenario: <select id="scenarioSel"></select></label>
-        <button id="prevBtn">⟵ Prev</button>
-        <button id="nextBtn">Next ⟶</button>
-        <button id="testsTabBtn">Tests</button>
-        <button id="previewTabBtn" disabled>Browser Output</button>
-        <button id="runBtn">Run Tests ▶</button>
-        <button id="toggleInstructions">Toggle Instructions</button>
-    </header>
-    <main>
-        <section class="pane top">
-            <section id="instructionsPane">
-                <header>
-                    <h2>Instructions</h2>
-                </header>
-                <div id="instructions" class="pane-content"></div>
-            </section>
-            <section id="editorPane">
-                <header>
-                    <h2>Editor</h2>
-                    <label>File: <select id="fileSel"></select></label>
-                    <button id="formatBtn" style="margin-left:.5rem">Format</button>
-                </header>
-                <textarea id="textAreaEditor"></textarea>
-                <section id="statsContainer">
-                    <ul>
-                        <li data-key="lines" data-label="Lines">0</li>
-                        <li data-key="functions" data-label="Funcs">0</li>
-                        <li data-key="variables" data-label="Variables">0</li>
-                        <li data-key="loops" data-label="Loops">0</li>
-                        <li data-key="branches" data-label="Branches">0</li>
-                        <li data-key="maxdepth" data-label="MaxDepth">0</li>
-                    </ul>
+<body class="d-flex flex-column">
+    <div class="container-fluid flex-grow-1 d-flex flex-column">
+        <header id="toolbar" class="row">
+            <nav class="btn-toolbar" role="toolbar">
+                <div class="btn-group me-2" role="group">
+                    <select class="form-select" id="scenarioSelector"></select>
+                </div>
+
+                <div class="btn-group me-2" role="group">
+                    <!-- <label>Scenario: <select id="scenarioSel"></select></label> -->
+
+                    <button type="button" class="btn btn-primary" id="prevBtn">⟵ Prev</button>
+                    <button type="button" class="btn btn-primary" id="nextBtn">Next ⟶</button>
+                </div>
+
+                <div class="btn-group me-2" role="group">
+                    <button type="button" class="btn btn-primary" id="previewTabBtn" disabled>View Page</button>
+                    <button type="button" class="btn btn-primary" id="testsTabBtn">Show Tests</button>
+                    <button type="button" class="btn btn-primary" id="runBtn">Run Tests ▶</button>
+                </div>
+                <button type="button" class="btn btn-primary" id="toggleInstructions">Instructions</button>
+
+            </nav>
+        </header>
+        <main class="row flex-grow-1">
+            <section class="col col-7 d-flex flex-column">
+                <section class="panel" id="instructionsPanel">
+                    <header>
+                        <h2>Instructions</h2>
+                    </header>
+                    <div id="instructions" class="pane-content"></div>
+                </section>
+                <section class="flex-grow-1 d-flex flex-column panel" id="editorPanel">
+                    <header class="d-flex align-items-center">
+                        <h2 class="flex-grow-1">Editor</h2>
+                        <div>
+                            <div class="input-group">
+                                <select id="fileSel" class="form-select">
+                                    <option selected>Choose...</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
+                                </select>
+                                <button id="formatBtn" class="btn btn-primary" type="button">Format</button>
+                                <button id="resetBtn" class="btn btn-warning" type="button">Reset File</button>
+                            </div>
+                        </div>
+                    </header>
+                    <div class="flex-grow-1 card">
+                        <style>
+                            .CodeMirror {
+                                flex: 1;
+                            }
+
+                            #statsContainer {
+                                li[data-value="0"] {
+                                    opacity: 0.75;
+                                    font-size: 0.75rem;
+                                }
+
+                                li::before {
+                                    opacity: 0.75;
+                                    content: attr(data-label) ": ";
+                                }
+                            }
+                        </style>
+                        <textarea id="textAreaEditor"></textarea>
+                        <section class="card-footer text-body-secondary font-monospace">
+                            <div id="statsContainer">
+                                <ul class="list-inline d-flex align-items-center justify-content-center">
+                                    <li class="list-inline-item flex-grow-1" data-value="0" data-key="lines"
+                                        data-label="Lines">0</li>
+                                    <li class="list-inline-item flex-grow-1" data-value="0" data-key="functions"
+                                        data-label="Funcs">0</li>
+                                    <li class="list-inline-item flex-grow-1" data-value="0" data-key="variables"
+                                        data-label="Vars">0</li>
+                                    <li class="list-inline-item flex-grow-1" data-value="0" data-key="loops"
+                                        data-label="Loops">0</li>
+                                    <li class="list-inline-item flex-grow-1" data-value="0" data-key="branches"
+                                        data-label="Branches">0</li>
+                                    <li class="list-inline-item flex-grow-1" data-value="0" data-key="maxdepth"
+                                        data-label="MaxDepth">0</li>
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+
                 </section>
             </section>
-        </section>
-        <section class="pane bottom">
-            <section id="consolePane">
-                <header>
-                    <h2>Console Output</h2>
-                </header>
-                <div id="consoleOut" class="pane-content">/* console output */</div>
+            <section class="col">
+                <section class="panel" id="consolePanel">
+                    <header>
+                        <h2>Console Output</h2>
+                    </header>
+                    <div id="consoleOut" class="pane-content">/* console output */</div>
+                </section>
+                <section class="panel" id="testsOrPreview">
+
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tests-tab" data-bs-toggle="tab"
+                                data-bs-target="#js-tests-tab-pane" type="button" role="tab"
+                                aria-controls="js-tests-tab-pane" aria-selected="true">JS Tests</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="html-page-tab" data-bs-toggle="tab"
+                                data-bs-target="#html-page-tab-pane" type="button" role="tab"
+                                aria-controls="html-age-tab-pane" aria-selected="false">HTML Page</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
+                                data-bs-target="#disabled-tab-pane" type="button" role="tab"
+                                aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="js-tests-tab-pane" role="tabpanel"
+                            aria-labelledby="js-tests-tab" tabindex="0">
+                            <div id="testsList" class="pane-content">Press Run Tests</div>
+                        </div>
+                        <div class="tab-pane fade" id="html-page-tab-pane" role="tabpanel"
+                            aria-labelledby="html-page-tab" tabindex="0">
+                            <div id="previewWrapper" class="pane-content hidden" style="padding:0">
+                                <iframe id="previewFrame" style="border:0;width:100%;height:100%"></iframe>
+                            </div>
+                        </div>
+                        <!-- <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab"
+                            tabindex="0">
+                            <div id="previewWrapper" class="pane-content hidden" style="padding:0">
+                                <iframe id="previewFrame" style="border:0;width:100%;height:100%"></iframe>
+                            </div>
+                        </div> -->
+                    </div>
+
+
+                    <!-- <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                          <a class="nav-link active" aria-current="page" href="#">JS Tests</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">HTML Page</a>
+                        </li>
+                      </ul>
+                    <div id="testsList" class="pane-content">Press Run Tests</div>
+                    <div id="previewWrapper" class="pane-content hidden" style="padding:0">
+                        <iframe id="previewFrame" style="border:0;width:100%;height:100%"></iframe>
+                    </div> -->
+                </section>
             </section>
-            <section id="testsPane">
-                <header>
-                    <h2 id="paneTitle">Tests</h2>
-                </header>
-                <div id="testsOut" class="pane-content">Press Run Tests</div>
-                <div id="previewWrap" class="pane-content hidden" style="padding:0">
-                    <iframe id="previewFrame" style="border:0;width:100%;height:100%"></iframe>
-                </div>
-            </section>
-        </section>
-    </main>
+        </main>
+    </div>
+
 </body>
 
 </html>

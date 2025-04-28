@@ -1,13 +1,23 @@
-import * as dom from "./dom.js";
+import dom from "./dom.js";
 import { logLine } from "./utils.js";
 import scenarios from "./scenarios.js";
 import editor from "./editor.js";
 
+// We export a function for the tests so that we can find the last statement in the javascript test
+
 export function analyze() {
+  console.debug(`analyze`);
   editor.clearMarks(); // remove previous highlights
 
   // We only analyze JS files
-  if (!scenarios.getCurrentScenarioFile().endsWith(".js")) return;
+  if (!scenarios.getCurrentScenarioFile().endsWith(".js")) {
+    // Hide stats container
+    dom.UI.hideStatsContainer();
+    return;
+  }
+
+  // Show stats container
+  dom.UI.showStatsContainer();
 
   const code = editor.getCodeMirrorInstance().getValue();
   let ast;
@@ -157,7 +167,7 @@ export function analyze() {
 
   /* 4.  Emit summary & warnings */
   // consoleOut.textContent = JSON.stringify(stats, null, 4);
-  dom.updateStatsContainer(stats);
+  dom.UI.updateStatsContainer(stats);
   if (stats.whileTrue) logLine("⚠ while(true) detected");
   if (stats.forInf) logLine("⚠ for(;;) detected");
   if (stats.recur.length) logLine("⚠ recursion: " + stats.recur.join(", "));
@@ -172,3 +182,5 @@ function findDecl(ast, name) {
   });
   return out;
 }
+
+export default { analyze };

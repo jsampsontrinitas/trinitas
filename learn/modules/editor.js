@@ -1,5 +1,5 @@
 import { debounce, modeFor, logLine } from "./utils.js";
-import { analyze } from "./analyzer.js";
+import analyzer from "./analyzer.js";
 import runner from "./runner.js";
 import { updatePreview } from "./preview.js";
 import scenarios from "./scenarios.js";
@@ -29,6 +29,7 @@ codeMirror.on("change", debounce(onEdit, 400));
 
 function init() {
   // Load scenario at index 0
+  runner.createCapturedConsoleListener();
   scenarios.loadScenario(0);
 }
 
@@ -67,23 +68,23 @@ function setCurrentScenarioFile(scenarioFileName) {
   codeMirror.setValue(scenario.files[scenarioFileName]);
   dom.UI.setSelectedScenarioFileByValue(scenarioFileName);
   clearMarks();
+  dom.UI.clearConsole();
   setTimeout(async () => {
     await formatCurrentFile();
-    dom.UI.clearConsole();
   }, 10);
-  analyze();
 }
 
 function onEdit() {
   // Updates the scenario file source so the changes persist across
   // file-selection changes
   scenarios.setCurrentScenarioFileContent(codeMirror.getValue());
-  analyze();
-  if (scenarios.getCurrent().files.hasOwnProperty("index.html")) {
-    updatePreview();
-  } else {
-    runner.execUserJS();
-  }
+  analyzer.analyze();
+
+  const scenario = scenarios.getCurrent();
+  const hasIndexHtml = scenario.files.hasOwnProperty("index.html");
+
+  if (hasIndexHtml) updatePreview();
+  else runner.execUserJS();
 }
 
 export default {

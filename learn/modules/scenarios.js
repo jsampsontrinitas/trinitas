@@ -62,6 +62,9 @@ function getCurrentScenarioFileContent() {
 }
 
 export function loadScenario(index = 0) {
+
+  // "Index" may actually be an ID
+
   setCurrentScenario(index);
   const scenario = scenarios[index];
   dom.UI.setSelectedScenarioIndex(index);
@@ -81,7 +84,7 @@ export function loadScenario(index = 0) {
     scenario.defaultFile ?? Object.keys(scenario.files)[0]
   );
 
-  hasHtml ? updatePreview() : runner.execUserJS();
+  if ( hasHtml ) updatePreview();
 }
 
 function populateFileSelectorFromScenario(scenario) {
