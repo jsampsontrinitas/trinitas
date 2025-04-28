@@ -1,6 +1,7 @@
 import editor from "./editor.js";
+import preview from "./preview.js";
 import runner from "./runner.js";
-import scenarios, { loadScenario } from "./scenarios.js";
+import scenarios from "./scenarios.js";
 
 // const scenarioSelector = document.getElementById("scenarioSel");
 const scenarioFileSelector = document.getElementById("fileSel");
@@ -23,8 +24,15 @@ const paneTitle = {}; // document.getElementById("paneTitle");
 const btnFormatCode = document.getElementById("formatBtn");
 const btnBrowserOutput = document.getElementById("previewTabBtn");
 const btnShowTests = document.getElementById("testsTabBtn");
-const btnRunTests = document.getElementById("runBtn");
+const btnRunTests = document.getElementById("runTestsBtn");
+const btnRunCode = document.getElementById("runCodeBtn");
+const btnResetFile = document.getElementById("resetBtn");
 const btnToggleInstructions = document.getElementById("toggleInstructions");
+
+const btnJSTestsTab = document.getElementById("js-tests-tab");
+const btnHTMLPageTab = document.getElementById("html-page-tab");
+const paneJSTestsTab = document.getElementById("js-tests-tab-pane");
+const paneHTMLPageTab = document.getElementById("html-page-tab-pane");
 
 const scenarioSelector = document.getElementById("scenarioSelector");
 
@@ -37,7 +45,9 @@ const buttons = {
   btnBrowserOutput,
   btnShowTests,
   btnRunTests,
+  btnResetFile,
   btnToggleInstructions,
+  btnRunCode,
 };
 
 const containers = {
@@ -54,6 +64,10 @@ const dropdowns = {
 function init() {
   setupDOM();
   setupEventListeners();
+  // Load feather icons
+  if (typeof feather !== "undefined") {
+    feather.replace({ width: "16px" });
+  }
 }
 
 function setupDOM() {
@@ -64,18 +78,18 @@ function setupDOM() {
 }
 
 function clickButton(button) {
-  if ( Object.values(buttons).includes(button) ) {
+  if (Object.values(buttons).includes(button)) {
     button.click();
   }
 }
 
 function setButtonEnabled(button, enabled) {
-  if ( Object.values(buttons).includes(button) ) {
+  if (Object.values(buttons).includes(button)) {
     button.disabled = !enabled;
   }
 }
 
-function setBrowserOutputButtonEnabled (enabled) {
+function setBrowserOutputButtonEnabled(enabled) {
   btnBrowserOutput.disabled = !enabled;
 }
 
@@ -91,18 +105,21 @@ function addScenarioFilesOption(text, value) {
   scenarioFileSelector.add(new Option(text, value));
 }
 
-function getScenarioFileSelectorOptions () {
+function getScenarioFileSelectorOptions() {
   return Array.from(scenarioFileSelector.options);
 }
 
 function clearScenarioFileSelectorOptions() {
   console.log("Clearing scenario selector options");
-  // Remove all options from the scenario selector
-  while (scenarioFileSelector.options.length > 0) {
-    scenarioFileSelector.remove(0);
-  }
+  scenarioFileSelector.innerHTML = "";
 }
 
+/**
+ * Sets the selected option in the scenario file selector based on the provided value.
+ *
+ * @param {string} value - The value of the scenario file to select.
+ * @throws {Error} Throws an error if the scenario file is not found in the selector.
+ */
 function setSelectedScenarioFileByValue(value) {
   // Set the selected scenario file in the selector
   for (const option of scenarioFileSelector.options) {
@@ -115,7 +132,7 @@ function setSelectedScenarioFileByValue(value) {
 }
 
 function clearConsole() {
-  for (const entry of consoleContainer.childNodes) entry.remove();
+  consoleContainer.innerHTML = "";
 }
 
 function setupEventListeners() {
@@ -132,7 +149,7 @@ function setupEventListeners() {
   nextScenarioButton.addEventListener("click", scenarios.loadNext);
   previousScenarioButton.addEventListener("click", scenarios.loadPrevious);
 
-  btnFormatCode.addEventListener("click", editor.formatCurrentFile);
+  btnFormatCode.addEventListener("click", editor.formatContent);
   btnRunTests.addEventListener("click", () => runner.runTests());
 
   btnShowTests.addEventListener("click", () => {
@@ -149,9 +166,89 @@ function setupEventListeners() {
 
   btnToggleInstructions.addEventListener("click", () => {
     const { display } = getComputedStyle(instructionsPanel);
-    instructionsPanel.style.display = ( display == "none" ? "" : "none" );
+    instructionsPanel.style.display = display == "none" ? "" : "none";
   });
 
+  btnResetFile.addEventListener("click", () => {
+    editor.resetCurrentFile();
+  });
+
+  btnRunCode.addEventListener("click", () => {
+    const scenario = scenarios.getCurrent();
+    if (scenarios.hasHTML(scenario)) {
+      preview.refresh();
+      setSelectedTabAndPane(paneHTMLPageTab);
+    } else {
+      runner.execUserJS();
+    }
+  });
+}
+
+function setSelectedTabAndPane(pane) {
+  const tabPanes = [paneHTMLPageTab, paneJSTestsTab];
+  const tabButtons = [btnHTMLPageTab, btnJSTestsTab];
+
+  for (const _pane of tabPanes) {
+    // Determine whether we are enabling this pane/button pair or not
+    let enabling = false;
+    const button = tabButtons.find(({ id }) => _pane.id.startsWith(id));
+
+    if (_pane == pane) {
+      enabling = true;
+    }
+
+    // button.disabled = !enabling;
+    button.setAttribute("aria-selected", enabling);
+    button.classList[enabling ? "add" : "remove"]("active");
+    _pane.classList[enabling ? "add" : "remove"]("active", "show");
+  }
+}
+
+function buildTestsList () {
+
+  const buildTestButton = (config) => {
+    const button = document.createElement("li");
+    button.classList.add("list-group-item");
+    new bootstrap.Tooltip(button, {
+      html: true,
+      title: "Test: " + config.fn
+    });
+    button.innerHTML = config.desc;
+    return button;
+  }
+
+  testsContainer.innerHTML = "";
+
+  const scenario = scenarios.getCurrent();
+
+  for ( const test of scenario.tests ) {
+    const button = buildTestButton(test);
+    testsContainer.appendChild(button);
+  }
+
+}
+
+function selectPreviewTabPane () {
+  setSelectedTabAndPane(paneHTMLPageTab);
+}
+
+function selectJSTestsPane () {
+  setSelectedTabAndPane(paneJSTestsTab);
+}
+
+function updateHTMLPreviewTabEnabled() {
+  let enabled = false;
+  const scenario = scenarios.getCurrent();
+  if (scenarios.hasHTML(scenario)) {
+    enabled = true;
+    btnHTMLPageTab.disabled = false;
+    setSelectedTabAndPane(paneHTMLPageTab);
+  } else {
+    btnHTMLPageTab.disabled = true;
+    setSelectedTabAndPane(paneJSTestsTab);
+  }
+
+  return enabled;
 }
 
 export function updateStatsContainer(stats) {
@@ -202,6 +299,10 @@ export default {
     hideStatsContainer,
     showStatsContainer,
     updateStatsContainer,
+    updateHTMLPreviewTabEnabled,
+    selectPreviewTabPane,
+    selectJSTestsPane,
     clearConsole,
+    buildTestsList,
   },
 };

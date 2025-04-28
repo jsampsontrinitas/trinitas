@@ -1,7 +1,7 @@
 import dom from "./dom.js";
 import editor from "./editor.js";
-import { updatePreview } from "./preview.js";
-import runner from "./runner.js";
+import cache from "./scenarioCache.js";
+import preview from "./preview.js";
 
 export let currentIndex = 0;
 export let currentScenarioFile = "";
@@ -15,9 +15,7 @@ async function init() {
   // file that contains all the scenarios in JSON format.
   const response = await fetch("./scenarios/details.json");
   const data = await response.json();
-  for (const scenario of data) {
-    scenarios.push(scenario);
-  }
+  data.forEach((scenario) => scenarios.push(scenario));
   console.info("Loaded scenarios:", scenarios.length);
 }
 
@@ -25,11 +23,7 @@ function getAll() {
   return scenarios;
 }
 
-function setInitialScenario() {
-  setCurrentScenario(0);
-}
-
-function setCurrentScenario(scenarioIndex) {
+function setScenarioIndex(scenarioIndex) {
   currentIndex = scenarioIndex;
 }
 
@@ -54,18 +48,26 @@ function loadNext() {
 }
 
 function setCurrentScenarioFileContent(content) {
-  getCurrent().files[currentScenarioFile] = content;
+  const scenario = getCurrent();
+  const filename = currentFile;
+
+  cache.setCached(scenario.id, filename, content);
 }
 
 function getCurrentScenarioFileContent() {
-  return getCurrent().files[currentFile];
+  const scenario = getCurrent();
+  const filename = currentScenarioFile;
+
+  return cache.getCached(scenario.id, filename) ?? scenario.files[filename];
+}
+
+function hasHTML(scenario) {
+  return Object.keys(scenario.files).some((key) => key.endsWith(".html"));
 }
 
 export function loadScenario(index = 0) {
-
-  // "Index" may actually be an ID
-
-  setCurrentScenario(index);
+  console.debug(`Loading scenario: ${index}`);
+  setScenarioIndex(index);
   const scenario = scenarios[index];
   dom.UI.setSelectedScenarioIndex(index);
   dom.UI.setInstructions(scenario.instructions);
@@ -73,18 +75,19 @@ export function loadScenario(index = 0) {
   populateFileSelectorFromScenario(scenario);
 
   const hasHtml = scenario.files.hasOwnProperty("index.html");
+  const filename = scenario.defaultFile ?? Object.keys(scenario.files)[0];
 
-  dom.UI.setButtonEnabled(dom.UI.buttons.btnBrowserOutput, hasHtml);
+  editor.setCurrentScenarioFile(filename);
+  dom.UI.updateHTMLPreviewTabEnabled();
 
-  if (!hasHtml) {
-    dom.UI.clickButton(dom.UI.buttons.btnShowTests);
+  if (hasHtml) {
+    dom.UI.selectPreviewTabPane();
+    preview.refresh();
+    return;
   }
 
-  editor.setCurrentScenarioFile(
-    scenario.defaultFile ?? Object.keys(scenario.files)[0]
-  );
-
-  if ( hasHtml ) updatePreview();
+  dom.UI.buildTestsList();
+  dom.UI.selectJSTestsPane();
 }
 
 function populateFileSelectorFromScenario(scenario) {
@@ -101,13 +104,13 @@ function populateFileSelectorFromScenario(scenario) {
 export default {
   init,
   getAll,
-  setInitialScenario,
-  setCurrentScenario,
+  setScenarioIndex,
   getCurrent,
   setCurrentScenarioFile,
   getCurrentScenarioFile,
   getCurrentScenarioFileContent,
   setCurrentScenarioFileContent,
+  hasHTML,
   loadNext,
   loadPrevious,
   loadScenario,

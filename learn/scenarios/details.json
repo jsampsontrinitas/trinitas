@@ -36,7 +36,7 @@
     ],
     "instructions": "<p>When the button is clicked, increment the number inside the <code>&lt;span id=\"count\"&gt;</code>.</p>\n<p class=\"hint\">You can convert the current text to a number with <code>parseInt</code>, <code>Number()</code>, or unary&nbsp;<code>+</code>, then set/update the <code>.textContent</code> property.</p>",
     "files": {
-      "index.html": "<button id=\"btn\">Clicked <span id=\"count\">0</span> times</button>",
+      "index.html": "<button id=\"btn\">\n    Clicked <span id=\"count\">0</span> times\n</button>",
       "script.js": "function setup() {\n  const btn = document.getElementById(\"btn\");\n  const count = document.getElementById(\"count\");\n\n  btn.addEventListener(\"click\", () => {\n    /* TODO */\n  });\n}\n\nsetup();\n"
     }
   },

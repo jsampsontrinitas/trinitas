@@ -1,8 +1,11 @@
 import dom from "./dom.js";
+import cache from "./scenarioCache.js";
 import scenarios from "./scenarios.js";
 
-export function updatePreview() {
-  dom.setPreviewFrameSourceHTML(buildDoc(scenarios.getCurrent()));
+function refresh() {
+  const scenario = scenarios.getCurrent();
+  const docSource = buildDoc(scenario);
+  dom.setPreviewFrameSourceHTML(docSource);
 }
 
 /**
@@ -20,19 +23,31 @@ export function updatePreview() {
  * - A script is added to pipe console messages to the parent window for UI integration.
  */
 export function buildDoc(scenario) {
+
+  let htmlPage;
+
+  const files = Object.entries(scenario.files).map(([ filename, content ]) => {
+    const maybeCached = cache.getCached(scenario.id, filename) ?? content;
+    // While we're iterating, let's watch out for the index file (if any)
+    if ( filename === "index.html" ) {
+      htmlPage = maybeCached;
+    }
+    return [filename, maybeCached];
+  });
+
   // Construct the document around the body content
   let html = `<!DOCTYPE html><html><head></head><body>${
-    scenario.files["index.html"] ?? ""
+    htmlPage ?? ""
   }</body></html>`;
 
   // Convert our CSS files into style tags
-  const styles = Object.entries(scenario.files)
+  const styles = files
     .filter(([name]) => name.endsWith(".css"))
     .map(([, content]) => `<style>${content}</style>`)
     .join("\n");
 
   // Convert our JavaScript into script tags
-  const scripts = Object.entries(scenario.files)
+  const scripts = files
     .filter(([name]) => name.endsWith(".js"))
     .map(([, content]) => `<script>${content}</script>`)
     .join("\n");
@@ -54,8 +69,12 @@ export function buildDoc(scenario) {
     .replace(/<\/head>/i, (match) => styles + bridge + match)
     .replace(/<\/body>/i, (match) => scripts + match);
 
+  console.log(`Built doc: ${html.length} chars`);
+
+  console.groupEnd();
+
   // Return the result
   return html;
 }
 
-export default { buildDoc };
+export default { refresh, buildDoc };

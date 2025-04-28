@@ -64,6 +64,8 @@ export function execUserJS() {
   });
 }
 
+function runUserScenarioCode() {}
+
 // captures the main window console so that we can intercept calls
 // to `console.log`, `console.error`, etc., and show the output to
 // the user via our in-page "Console Output" window. No present
@@ -116,7 +118,7 @@ export function captureConsole(userCodeRunner) {
 function onCapturedConsoleMessage(event) {
   console.debug(`onCapturedConsoleMessage`);
   // Was this our testing iframe?
-  if ( event.source !== testFrame?.contentWindow) {
+  if (event.source !== testFrame?.contentWindow) {
     // Or maybe it was our preview iframe?
     if (event.source !== dom.UI.getPreviewFrame().contentWindow) {
       return;
@@ -139,13 +141,9 @@ function destroyCapturedConsoleListener() {
 }
 
 export function runTests(scenario = scenarios.getCurrent()) {
-  console.debug(`runTests`);
-
   const frame = createTestFrame();
 
   frame.srcdoc = preview.buildDoc(scenario);
-
-  console.log(frame.srcdoc);
 
   setTimeout(() => {
     console.debug(`onTestFrameLoadEvent callback`);
@@ -181,7 +179,7 @@ function runTestsInFrame(scenario) {
   return results;
 }
 
-function displayTestResults(results) {
+async function displayTestResults(results) {
   console.debug(`displayTestResults`);
   const container = dom.UI.containers.testsContainer;
   const fragment = document.createDocumentFragment();
@@ -191,9 +189,13 @@ function displayTestResults(results) {
     const className = result.pass ? "pass" : "fail";
     const description = (result.pass ? "✔" : "✖") + " " + result.desc;
 
-    element.title = result.source;
     element.classList.add(className);
     element.textContent = description;
+    element.title = await prettier.format(result.source, {
+      parser: "babel",
+      plugins: prettierPlugins,
+    });
+
     fragment.appendChild(element);
   }
 
@@ -208,6 +210,7 @@ function displayTestResults(results) {
 
 export default {
   execUserJS,
+  runUserScenarioCode,
   runTests,
   createCapturedConsoleListener,
 };

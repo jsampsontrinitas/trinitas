@@ -10,6 +10,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
         crossorigin="anonymous"></script>
+    <!-- Feather (Icons) -->
+    <script src="https://unpkg.com/feather-icons"></script>
     <!-- CodeMirror 5 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.17/lib/codemirror.min.css">
     <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.17/lib/codemirror.min.js"></script>
@@ -31,7 +33,8 @@
     <script type="module" src="index.js" defer></script>
     <style>
         body {
-            height: 100vh;
+            margin-top: 20px;
+            height: calc(100vh - 40px);
         }
     </style>
 </head>
@@ -40,13 +43,12 @@
     <div class="container-fluid flex-grow-1 d-flex flex-column">
         <header id="toolbar" class="row">
             <nav class="btn-toolbar" role="toolbar">
-                <div class="btn-group me-2" role="group">
+                <div class="input-group me-2" role="group">
+                    <span class="input-group-text">Scenario</span>
                     <select class="form-select" id="scenarioSelector"></select>
                 </div>
 
                 <div class="btn-group me-2" role="group">
-                    <!-- <label>Scenario: <select id="scenarioSel"></select></label> -->
-
                     <button type="button" class="btn btn-primary" id="prevBtn">⟵ Prev</button>
                     <button type="button" class="btn btn-primary" id="nextBtn">Next ⟶</button>
                 </div>
@@ -54,13 +56,19 @@
                 <div class="btn-group me-2" role="group">
                     <button type="button" class="btn btn-primary" id="previewTabBtn" disabled>View Page</button>
                     <button type="button" class="btn btn-primary" id="testsTabBtn">Show Tests</button>
-                    <button type="button" class="btn btn-primary" id="runBtn">Run Tests ▶</button>
+                    <button type="button" class="btn btn-primary" id="runTestsBtn">Run Tests ▶</button>
                 </div>
                 <button type="button" class="btn btn-primary" id="toggleInstructions">Instructions</button>
 
             </nav>
         </header>
         <main class="row flex-grow-1">
+            <style>
+                #instructionsPanel,
+                #consolePanel {
+                    margin-bottom: 20px;
+                }
+            </style>
             <section class="col col-7 d-flex flex-column">
                 <section class="panel" id="instructionsPanel">
                     <header>
@@ -71,16 +79,21 @@
                 <section class="flex-grow-1 d-flex flex-column panel" id="editorPanel">
                     <header class="d-flex align-items-center">
                         <h2 class="flex-grow-1">Editor</h2>
-                        <div>
-                            <div class="input-group">
-                                <select id="fileSel" class="form-select">
-                                    <option selected>Choose...</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
-                                </select>
-                                <button id="formatBtn" class="btn btn-primary" type="button">Format</button>
-                                <button id="resetBtn" class="btn btn-warning" type="button">Reset File</button>
+                        <div class="btn-toolbar">
+                            <div class="input-group me-2" role="group">
+                                <span class="input-group-text">File</span>
+                                <select id="fileSel" class="form-select"></select>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" id="formatBtn" class="btn btn-primary">
+                                    <i data-feather="align-left"></i> Format
+                                </button>
+                                <button type="button" id="runCodeBtn" class="btn btn-primary">
+                                    <i data-feather="play-circle"></i> Run
+                                </button>
+                                <button type="button" id="resetBtn" class="btn btn-warning">
+                                    <i data-feather="refresh-cw"></i> Reset
+                                </button>
                             </div>
                         </div>
                     </header>
@@ -136,29 +149,31 @@
 
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="tests-tab" data-bs-toggle="tab"
+                            <button class="nav-link active" id="js-tests-tab" data-bs-toggle="tab"
                                 data-bs-target="#js-tests-tab-pane" type="button" role="tab"
                                 aria-controls="js-tests-tab-pane" aria-selected="true">JS Tests</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="html-page-tab" data-bs-toggle="tab"
                                 data-bs-target="#html-page-tab-pane" type="button" role="tab"
-                                aria-controls="html-age-tab-pane" aria-selected="false">HTML Page</button>
+                                aria-controls="html-page-tab-pane" aria-selected="false">HTML Page</button>
                         </li>
-                        <li class="nav-item" role="presentation">
+                        <!-- <li class="nav-item" role="presentation">
                             <button class="nav-link" id="disabled-tab" data-bs-toggle="tab"
                                 data-bs-target="#disabled-tab-pane" type="button" role="tab"
                                 aria-controls="disabled-tab-pane" aria-selected="false" disabled>Disabled</button>
-                        </li>
+                        </li> -->
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="js-tests-tab-pane" role="tabpanel"
                             aria-labelledby="js-tests-tab" tabindex="0">
-                            <div id="testsList" class="pane-content">Press Run Tests</div>
+                            <ul id="testsList" class="list-group list-group-flush mt-2">
+                                <!-- <li class="list-group-item">An item</li> -->
+                            </ul>
                         </div>
                         <div class="tab-pane fade" id="html-page-tab-pane" role="tabpanel"
                             aria-labelledby="html-page-tab" tabindex="0">
-                            <div id="previewWrapper" class="pane-content hidden" style="padding:0">
+                            <div id="previewWrapper" class="pane-content" style="padding:0">
                                 <iframe id="previewFrame" style="border:0;width:100%;height:100%"></iframe>
                             </div>
                         </div>
