@@ -1,61 +1,86 @@
-// The "machine" class is our base class; it doesn't extend anything. It provides the basis of all other machine-type objects and classes.
-class Machine {
-  weight;
-  location;
-  element;
-  color;
-  angle;
-  // The constructor is the function/method that runs when we create an instance of our class. It can accept input, or provide its own default values for the properties of the object it creates.
-  constructor ( in_weight = 100, x_coord = 10, y_coord = 10, color = "gray", angle = 0 ) {
-    this.weight = in_weight;
-    this.element = null;
-    this.color = color;
-    this.location = [ x_coord, y_coord ];
-    this.angle = angle;
-    console.log("Creating machine with weight of " + in_weight + " pounds");
-    console.log("Oh, and it has a location of " + [ x_coord, y_coord ] );
-  }
+import utils from "./utils.js";
+import Tank from "./tank.js";
 
-  // This method is responsible for creating our associated HTML element
-  render () {
-    // If an element already exists, no work to do--just return!
-    if ( this.element ) return;
+const tank = new Tank(1_000, "green");
 
-    // Create our new element!
-    this.element = document.createElement("div");
-    this.element.style.backgroundColor = this.color;
-    this.element.style.width = "30px";
-    this.element.style.height = "10px";
-    this.element.style.transform = "rotate(" + this.angle + "rad)";
+tank.moveSpeed = 5;
 
-    // Place our element on the page itself
-    document.body.appendChild(this.element);
-  }
+const tanks = [tank];
+
+for (let i = 0; i < 10; i++) {
+  const botTank = new Tank(0, utils.getRandomColor());
+  const location = utils.getRandomLocation();
+  botTank.x = location.x;
+  botTank.y = location.y;
+  botTank.angle = Math.random() * Math.PI * 2;
+
+  tanks.push(botTank);
 }
 
-class Automobile extends Machine {
-  fuel;
-  moveSpeed;
-  constructor ( in_fuel = 1, in_weight = 2_000, color = "gray", moveSpeed = 10 ) {
-    super( in_weight, 10, 10, color );
-    this.fuel = in_fuel;
-    this.moveSpeed = moveSpeed;
-    console.log("You've created an automobile with a tank that is " + in_fuel * 100 + "% full");
+document.addEventListener("keydown", (event) => {
+  if (event.key in keysPressed) {
+    event.preventDefault();
+    keysPressed[event.key] = true;
   }
-}
+});
 
-// A tank is a special type of automobile, that inherits all properties of an automobile by virtue of extending that class. 
-class Tank extends Automobile {
-    rounds;
-    constructor (rounds = 1_000, color = "green") {
-        super( 1, 10_000, color);
-        this.rounds = rounds;
-        console.log("Your tank is alive!");
+document.addEventListener("keyup", (event) => {
+  if (event.key in keysPressed) {
+    event.preventDefault();
+    keysPressed[event.key] = false;
+  }
+});
+
+const keysPressed = {
+  ArrowUp: false,
+  ArrowRight: false,
+  ArrowDown: false,
+  ArrowLeft: false,
+};
+
+let lastFrameUpdate = 0;
+
+function update() {
+
+  // Enforce a frame-rate of 24 frames per second
+  if (performance.now() - lastFrameUpdate < 1000 / 24) {
+    // Not enough time has passed, schedule another check ASAP
+    return requestAnimationFrame(update);
+  }
+
+  lastFrameUpdate = performance.now();
+
+  // Check for user input to re-position and re-orient tank(s)
+  if (keysPressed.ArrowUp) tank.driveForward();
+  else if (keysPressed.ArrowDown) tank.driveBackward();
+
+  if (keysPressed.ArrowLeft) tank.turnLeft();
+  else if (keysPressed.ArrowRight) tank.turnRight();
+
+  for (let i = 0; i < tanks.length; i++) {
+    //const _tank of tanks ) {
+    const _tank = tanks[i];
+
+    // Leave the user's tank alone
+    if (_tank === tank) {
+      tank.update();
+      continue;
     }
+
+    // Give the other tanks somewhere to go
+    if (!_tank.hasDestination()) {
+      const spot = utils.getRandomLocation();
+      _tank.setDestination(spot.x, spot.y);
+    }
+
+    // Each tank should navigate to its next destination
+    _tank.selfDrive();
+
+    // Update the tank's location, orientation, etc.
+    _tank.update();
+  }
+
+  requestAnimationFrame(update);
 }
 
-const armyTank = new Tank( 1_000, "green");
-
-armyTank.render();
-// const vehicle = new Automobile( 0.5 );
-// const faxmachine = new Machine( 500, 53, 32 );
+update();
