@@ -1,12 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script type="module" src="index.js" defer></script>
+    <!-- This script tag has a few attributes:
+            - [type]
+                Indicates the type of script in the file.
+                In our case, it's a "module", meaning processing of the script
+                will be deferred until after the page has been loaded.
+                By declaring our index.js script to be a "module" type, we can
+                now use keywords like "import" within!
+
+            - [src]
+                This should already be familiar to us; it is the address or
+                location of the file we'd like to load. In our case it's a
+                simple filename.
+
+            - [defer]
+                This is no longer needed, now that we have [type='module'].
+                We used [defer] earlier to make sure the document had finished
+                loading before our script code would be executed.
+    -->
 </head>
+
 <body>
     <h1>Planes</h1>
 </body>
+
 </html>
