@@ -54,7 +54,12 @@ export default class Automobile extends Machine {
     this.turnSpeed = opts.turnSpeed;
   } // END — constructor( … )
 
+  // Driving methods are added to our Automobile class, so that anything that
+  // extends this class (e.g., the Tank class) will inherit the ability to
+  // drive around the page.
+  
   driveForward() {
+    // Increase the element's location.x by the object's moveSpeed
     this.location.x = this.location.x + this.moveSpeed;
   }
 
@@ -63,10 +68,12 @@ export default class Automobile extends Machine {
   }
 
   turnLeft() {
+    // Decrease the element's angle by the object's turnSpeed
     this.angle = this.angle - this.turnSpeed;
   }
 
   turnRight() {
     this.angle = this.angle + this.turnSpeed;
   }
+
 } // END — export default class Automobile …
