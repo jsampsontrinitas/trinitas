@@ -79,6 +79,10 @@ export default class Machine {
     this.element.style.backgroundColor = this.color; // Set CSS background-color
     this.element.style.width = "30px";  // Set a hard-coded "30px" value as CSS width
     this.element.style.height = "10px"; // Set a hard-coded "10px" value as CSS height
+
+    // By setting the element's position to "absolute", we enable the element
+    // to be arbitrarily positioned anywhere on the page via "left" and "top"
+    // properties. Automobile instances rely on this to "drive" around the page.
     this.element.style.position = "absolute";
 
     // This next line sets the CSS `transform` property to a rotation value.
@@ -97,7 +101,13 @@ export default class Machine {
     document.body.appendChild(this.element);
   }
 
+  // The render method creates the HTML element and puts it on the page.
+  // We will use the update method to transfer properties from our object to
+  // our associated element.
   update () {
+    // Below we take whatever `this.location.x` is, and we assign it via CSS
+    // to the "left" property of the HTML element. This tells the element how
+    // far from the left of the screen it is to be.
     this.element.style.left = this.location.x + "px";
   }
 
