@@ -9,13 +9,13 @@ import Machine from "./Machine.js";
 // in other files, we will do the same from this file with the Automobile
 // class.
 export default class Automobile extends Machine {
-
   // At the top of our class is where we have placed our "class fields"
   // Class fields help to make our code "self documenting," meaning you can
   // quickly identify what properties will exist on any instance of the
   // Automobile class.
   fuel;
   moveSpeed;
+  turnSpeed;
 
   // Our constructor is executed when we run `new Automobile()`; it assigns a
   // default value of `{}` (i.e., an empty object) as the value of `options`.
@@ -23,11 +23,11 @@ export default class Automobile extends Machine {
   // the object literal `{ color: 'red' }` would be referenced here by our
   // constructor as `options`.
   constructor(options = {}) {
-
     // We specify here the default values for class fields on this class.
     const defaults = {
       fuel: 100,
       moveSpeed: 5,
+      turnSpeed: 0.15,
     };
 
     // We use a variable called `opts` to hold the final class field values.
@@ -51,7 +51,22 @@ export default class Automobile extends Machine {
     // object instance. We do this for each class field declared above.
     this.fuel = opts.fuel;
     this.moveSpeed = opts.moveSpeed;
-
+    this.turnSpeed = opts.turnSpeed;
   } // END — constructor( … )
 
+  driveForward() {
+    this.location.x = this.location.x + this.moveSpeed;
+  }
+
+  driveBackward() {
+    this.location.x = this.location.x - this.moveSpeed;
+  }
+
+  turnLeft() {
+    this.angle = this.angle - this.turnSpeed;
+  }
+
+  turnRight() {
+    this.angle = this.angle + this.turnSpeed;
+  }
 } // END — export default class Automobile …

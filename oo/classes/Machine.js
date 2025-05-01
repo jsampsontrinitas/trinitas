@@ -79,6 +79,7 @@ export default class Machine {
     this.element.style.backgroundColor = this.color; // Set CSS background-color
     this.element.style.width = "30px";  // Set a hard-coded "30px" value as CSS width
     this.element.style.height = "10px"; // Set a hard-coded "10px" value as CSS height
+    this.element.style.position = "absolute";
 
     // This next line sets the CSS `transform` property to a rotation value.
     // We use a "template literal" here to represent the final string value
@@ -94,7 +95,10 @@ export default class Machine {
     // attach our element as a child. This effectively places our element
     // within the <body> and </body> tags as the last item.
     document.body.appendChild(this.element);
+  }
 
-  } // END — constructor( … )
+  update () {
+    this.element.style.left = this.location.x + "px";
+  }
 
 } // END — export default class Machine …
