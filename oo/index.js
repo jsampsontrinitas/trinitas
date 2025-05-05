@@ -32,53 +32,49 @@ const pinkTank = new Tank({ color: "pink" });
 // "inherits" the render method.
 armyTank.render();
 
-// const vehicle = new Automobile( 0.5 );
-// const faxmachine = new Machine( 500, 53, 32 );
+const pressedKeys = {
+  "KeyW": false,
+  "KeyA": false,
+  "KeyS": false,
+  "KeyD": false,
+  "ArrowUp": false,
+  "ArrowLeft": false,
+  "ArrowRight": false,
+  "ArrowDown": false,
+};
 
-// We're creating a function to handle the logic to begin intercepting
-// keyboard events (e.g., pressing the W or Up Arrow keys).
-function setupKeyBinding() {
-  // Inside our setupKeyBinding function we create two helper functions
-  // that really only exist to perform a task for the setupKeyBinding
-  // function, and for this reason it's okay to define them inside of
-  // the setupKeyBinding function (where no other code could call them).
-  function handleKeyUp(event) {
-    // This "event" object is a KeyboardEvent object, documented online
-    // at https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent
-    // We log the `code` property just to verify that everything works.
-    console.log(event.code);
-  } // END handleKeyUp
+function update () {
 
-  // Similar to our `handleKeyUp` function above, this function exists
-  // to handle "keydown" events that occur within the document.
-  function handleKeyDown(event) {
-    // We log the `event.code` to verify that everything works
-    console.log(event.code);
+  // Is the user driving forward/backward?
+  if ( pressedKeys.KeyW || pressedKeys.ArrowUp ) {
+    armyTank.driveForward();
+  } else if ( pressedKeys.KeyS || pressedKeys.ArrowDown ) {
+    armyTank.driveBackward();
+  }
 
-    // We then compare (using == importantly) to "KeyW" to see if the
-    // W key was pressed. If the condition is _true_, then the block
-    // that follows will be executed. By "block", I'm referring to the
-    // code that exists within the { and } characters.
-    if (event.code == "KeyW") {
-      // We call the driveForward method (inherited from Automobile)
-      armyTank.driveForward();
-      // We then call the update method (inherited from Machine)
-      armyTank.update();
-      // The "implementation" (i.e., the inner-workings) of the
-      // driveForward method updates the `location.x` property, so
-      // we log the value of this property to verify everything works.
-      console.log(armyTank.location.x);
-    } // END if
-  } // END handleKeyDown
+  // Is the user turning?
+  if ( pressedKeys.KeyA || pressedKeys.ArrowLeft ) {
+    armyTank.turnLeft();
+  } else if ( pressedKeys.KeyD || pressedKeys.ArrowRight ) {
+    armyTank.turnRight();
+  }
 
-  // These are the actual event-listener bindings. We tell the page
-  // that on every "keyup" event that occurs within the document, we
-  // want to run the `handleKeyUp` function. Likewise, we tell the
-  // page that it should invoke `handleKeyDown` for "keydown" events.
-  document.addEventListener("keyup", handleKeyUp);
-  document.addEventListener("keydown", handleKeyDown);
-  
-} // END setupKeyBinding
+  armyTank.update();
 
-// Our setupKeyBinding function has to be called, so we call it here
-setupKeyBinding();
+  requestAnimationFrame(update);
+
+}
+
+update();
+
+document.addEventListener("keydown", (event) => {
+  if ( event.code in pressedKeys ) {
+    pressedKeys[ event.code ] = true;
+  }
+});
+
+document.addEventListener("keyup", (event) => {
+  if ( event.code in pressedKeys ) {
+    pressedKeys[ event.code ] = false;
+  }
+});

@@ -108,7 +108,9 @@ export default class Machine {
     // Below we take whatever `this.location.x` is, and we assign it via CSS
     // to the "left" property of the HTML element. This tells the element how
     // far from the left of the screen it is to be.
+    this.element.style.top = this.location.y + "px";
     this.element.style.left = this.location.x + "px";
+    this.element.style.transform = "rotate(" + this.angle + "rad)";
   }
 
 } // END — export default class Machine …

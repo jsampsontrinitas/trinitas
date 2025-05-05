@@ -59,21 +59,24 @@ export default class Automobile extends Machine {
   // drive around the page.
   
   driveForward() {
-    // Increase the element's location.x by the object's moveSpeed
-    this.location.x = this.location.x + this.moveSpeed;
+    const newX = this.location.x + Math.cos(this.angle) * this.moveSpeed;
+    const newY = this.location.y + Math.sin(this.angle) * this.moveSpeed;
+    // We use the cos/sin of our angle to move our tank "foward"
+    this.location.x = Math.max(0, Math.min(innerWidth, newX));
+    this.location.y = Math.max(0, Math.min(innerHeight, newY));
   }
 
   driveBackward() {
-    this.location.x = this.location.x - this.moveSpeed;
+    this.location.x -= Math.cos(this.angle) * this.moveSpeed;
+    this.location.y -= Math.sin(this.angle) * this.moveSpeed;
   }
 
   turnLeft() {
-    // Decrease the element's angle by the object's turnSpeed
-    this.angle = this.angle - this.turnSpeed;
+    this.angle -= this.turnSpeed;
   }
 
   turnRight() {
-    this.angle = this.angle + this.turnSpeed;
+    this.angle += this.turnSpeed;
   }
 
 } // END — export default class Automobile …
