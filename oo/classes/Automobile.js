@@ -54,29 +54,60 @@ export default class Automobile extends Machine {
     this.turnSpeed = opts.turnSpeed;
   } // END — constructor( … )
 
-  // Driving methods are added to our Automobile class, so that anything that
-  // extends this class (e.g., the Tank class) will inherit the ability to
-  // drive around the page.
-  
+  /**
+   * When driving forward, we want to leverage Math.cos and Math.sin to update
+   * our x and y coordinates. These will take our angle into consideration, and
+   * move us forward (relative to the automobile's orientation). Rather than
+   * assign the new coordinates in `location.location.x` and `this.location.y`,
+   * we store the "next" value in a variable (e.g., `newX`). We can then check
+   * to see that the next location is a permitted location. For instance, if
+   * the next location would place the automobile off screen, or in an area that
+   * is occupied by another automobile, then we do not want to proceed.
+   */
   driveForward() {
     const newX = this.location.x + Math.cos(this.angle) * this.moveSpeed;
     const newY = this.location.y + Math.sin(this.angle) * this.moveSpeed;
-    // We use the cos/sin of our angle to move our tank "foward"
+
+    /**
+     * We "clamp" our `newX` and `newY` to be between 0 and the browser widow
+     * `innerWidth` and `innerHeight`. We use `Math.max` to return the larger
+     * of two arbitrary values, and `Math.min` to return the smaller. Below we
+     * use the output of `Math.min(innerWidth, newX/Y)` as the second argument
+     * to `Math.max(0, …)`.
+     */
     this.location.x = Math.max(0, Math.min(innerWidth, newX));
     this.location.y = Math.max(0, Math.min(innerHeight, newY));
   }
 
   driveBackward() {
-    this.location.x -= Math.cos(this.angle) * this.moveSpeed;
-    this.location.y -= Math.sin(this.angle) * this.moveSpeed;
+    const newX = this.location.x - Math.cos(this.angle) * this.moveSpeed;
+    const newY = this.location.y - Math.sin(this.angle) * this.moveSpeed;
+
+    /**
+     * Apply "clamped" values (read above for more details).
+     */
+    this.location.x = Math.max(0, Math.min(innerWidth, newX));
+    this.location.y = Math.max(0, Math.min(innerHeight, newY));
   }
 
   turnLeft() {
+    /**
+     * TODO - Keep angle between 0 and 2 * Math.PI
+     * We can do this by increasing the value by Math.PI * 2 when the angle is
+     * less than 0, and decreasing the value by Math.PI * 2 when the angle is
+     * greater than or equal to Math.PI * 2. We're effectively turning 115%
+     * into 15%, and -15% into 85%, etc. The goal is to keep our numbers sane,
+     * so our math doesn't suffer.
+     *
+     * This can also be done using modulo arithmetic:
+     *   this.angle = (this.angle + 2 * Math.PI) % (2 * Math.PI);
+     * This keeps the angle between 0 (inclusive) and 2 * Math.PI (exclusive).
+     */
     this.angle -= this.turnSpeed;
   }
 
   turnRight() {
+    // TODO - Keep angle between 0 and 2 * Math.PI
     this.angle += this.turnSpeed;
   }
-
 } // END — export default class Automobile …
