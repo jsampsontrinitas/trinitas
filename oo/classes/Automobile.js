@@ -75,8 +75,8 @@ export default class Automobile extends Machine {
      * use the output of `Math.min(innerWidth, newX/Y)` as the second argument
      * to `Math.max(0, …)`.
      */
-    this.location.x = Math.max(0, Math.min(innerWidth, newX));
-    this.location.y = Math.max(0, Math.min(innerHeight, newY));
+    this.location.x = Math.max( 0, Math.min( innerWidth,  newX ) );
+    this.location.y = Math.max( 0, Math.min( innerHeight, newY ) );
   }
 
   driveBackward() {
@@ -86,8 +86,8 @@ export default class Automobile extends Machine {
     /**
      * Apply "clamped" values (read above for more details).
      */
-    this.location.x = Math.max(0, Math.min(innerWidth, newX));
-    this.location.y = Math.max(0, Math.min(innerHeight, newY));
+    this.location.x = Math.max( 0, Math.min( innerWidth,  newX ) );
+    this.location.y = Math.max( 0, Math.min( innerHeight, newY ) );
   }
 
   turnLeft() {

@@ -2,6 +2,7 @@
 // can use `import` statements to pull code in from other scripts. By using the
 // module approach, our project files now remain more organized, making them
 // easier to navigate, extend, and maintain.
+import Projectile from "./classes/Projectile.js";
 import Tank from "./classes/Tank.js";
 
 // We're using `const` to create variables `armyTank` and `pinkTank`. Because
@@ -33,48 +34,56 @@ const pinkTank = new Tank({ color: "pink" });
 armyTank.render();
 
 const pressedKeys = {
-  "KeyW": false,
-  "KeyA": false,
-  "KeyS": false,
-  "KeyD": false,
-  "ArrowUp": false,
-  "ArrowLeft": false,
-  "ArrowRight": false,
-  "ArrowDown": false,
+  KeyW: false,
+  KeyA: false,
+  KeyS: false,
+  KeyD: false,
+  ArrowUp: false,
+  ArrowLeft: false,
+  ArrowRight: false,
+  ArrowDown: false,
 };
 
-function update () {
-
+function update() {
   // Is the user driving forward/backward?
-  if ( pressedKeys.KeyW || pressedKeys.ArrowUp ) {
+  if (pressedKeys.KeyW || pressedKeys.ArrowUp) {
     armyTank.driveForward();
-  } else if ( pressedKeys.KeyS || pressedKeys.ArrowDown ) {
+  } else if (pressedKeys.KeyS || pressedKeys.ArrowDown) {
     armyTank.driveBackward();
   }
 
   // Is the user turning?
-  if ( pressedKeys.KeyA || pressedKeys.ArrowLeft ) {
+  if (pressedKeys.KeyA || pressedKeys.ArrowLeft) {
     armyTank.turnLeft();
-  } else if ( pressedKeys.KeyD || pressedKeys.ArrowRight ) {
+  } else if (pressedKeys.KeyD || pressedKeys.ArrowRight) {
     armyTank.turnRight();
   }
 
   armyTank.update();
 
   requestAnimationFrame(update);
-
 }
 
 update();
 
 document.addEventListener("keydown", (event) => {
-  if ( event.code in pressedKeys ) {
-    pressedKeys[ event.code ] = true;
+  if (event.code == "Space") {
+    // armyTank.shoot();
+    new Projectile({
+      x: Math.random() * innerWidth,
+      y: Math.random() * innerHeight,
+      move: 1,
+      angle: Math.random() * Math.PI * 2,
+    });
+  }
+
+  if (event.code in pressedKeys) {
+    pressedKeys[event.code] = true;
   }
 });
 
 document.addEventListener("keyup", (event) => {
-  if ( event.code in pressedKeys ) {
-    pressedKeys[ event.code ] = false;
+  if (event.code in pressedKeys) {
+    pressedKeys[event.code] = false;
   }
 });
